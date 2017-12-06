@@ -22,8 +22,6 @@ public class play extends JPanel implements Runnable
     public play(){
         Block b= new Block(100,500,500,20);
         Block c= new Block(655,100,20,500);
-        //Block b= new Block(100,20,500,20);
-        //Block c= new Block(10,100,20,500);
         Block d= new Block(100,400,100,20);
         Block e= new Block(100,150,20,100);
         Block f= new Block(400,300,100,20);
@@ -79,9 +77,6 @@ public class play extends JPanel implements Runnable
     			render=true;
     			//update game
     			updateSquare();//moves square according to velocities
-    			if(!s.getGounded()){
-    			s.gravity();
-    			}
     			for(int i=0;i<blocks.size();i++){//Collision Checks
     				if(s.intersectsBlocks(blocks)[i]){
     					s.fixPosition(blocks.get(i));
