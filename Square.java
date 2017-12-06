@@ -93,16 +93,16 @@ public class Square extends Object
     		Block b=list.get(i);
     		if(intersectsBlock(b)){
     			blist[i]=true;
-    			if(b.getY()<(int) rect.getMaxY()){
+    			if(b.getY()<=(int) rect.getMaxY()){
     				setVely(0);
     			}
-    			else if(b.getX()<(int) rect.getMaxX()){
+    			else if(b.getX()<=(int) rect.getMaxX()){
     				setVelx(0);
     			}
-    			else if((b.getY()+b.getHeight())>(int)rect.getMinY()){
+    			else if((b.getY()+b.getHeight())>=(int)rect.getMinY()){
     				setVely(0);
     			}
-    			else if((b.getX()+b.getWidth())>(int)rect.getMinX()){
+    			else if((b.getX()+b.getWidth())>=(int)rect.getMinX()){
     				setVelx(0);
     			}
     		}
@@ -118,37 +118,32 @@ public class Square extends Object
      * @param b
      */
 	public void fixPosition(Block b){
+		System.out.println("working");
     	if(rect.contains(b.getX(),b.getY(), b.getWidth(), 1)){
     		int diff =b.getY()-(int)rect.getMaxY();
-    		setVely(0);
     		move(0, diff);
     	}
     	else if(rect.contains(b.getX(),b.getY(), 1, b.getHeight())){
     		int diff =b.getX()-(int) rect.getMaxX();
-    		setVelx(0);
     		move(diff, 0);
     	}
     	else if(rect.contains(b.getX(),b.getY()+b.getHeight(), b.getWidth(), 1)){
     		int diff = (b.getY()+b.getHeight())-(int) rect.getMinY();
-    		setVely(0);
     		move(0,diff);
     	}
     	else if(rect.contains(b.getX()+b.getWidth(),b.getY(), 1, b.getHeight())){
     		int diff = (int) ((b.getX()+b.getWidth())-(rect.getMinX()));
-    		setVelx(0);
     		move(diff,0);
     	}
     	if(b.getRect().contains(rect.getMinX(), rect.getMaxY()))
     	{// add to all and remove top to work||b.getrect().contains((rect.getMinX()+xscale),(rect.getMaxY()), width-xscale, 1)
     		if(rect.getMaxY()-b.getY()<b.getMaxX()-rect.getX()){
         		int diff =(int)rect.getMaxY()-b.getY();
-        		setVely(0);
         		move(0, -diff);
         		System.out.println("1");
     		}
     		else if(rect.getMaxY()-b.getY()>rect.getX()-b.getMaxX()){
         		int diff =b.getMaxX()-(int)rect.getMinX();
-        		setVelx(0);
         		move(diff, 0);
         		System.out.println("2");
     		}
@@ -157,13 +152,11 @@ public class Square extends Object
     	{
     		if(b.getMaxX()-rect.getMinX()<b.getMaxY()-rect.getMinY()){
         		int diff =b.getMaxX()-(int)rect.getMinX();
-        		setVelx(0);
         		move(diff, 0);
         		System.out.println("3");
     		}
     		else if(b.getMaxX()-rect.getMinX()>b.getMaxY()-rect.getMinY()){
     			int diff =b.getMaxY()-(int)rect.getMinY();
-        		setVely(0);
         		move(0, diff);
         		System.out.println("4");
     		}
@@ -172,12 +165,10 @@ public class Square extends Object
     	{
     		if(b.getMaxY()-rect.getMinY()<rect.getMaxX()-b.getX()){
     			int diff =b.getMaxY()-(int)rect.getMinY();
-        		setVely(0);
         		move(0, diff);
     		}
     		else if(b.getMaxY()-rect.getMinY()>rect.getMaxX()-b.getX()){
     			int diff =(int)rect.getMaxX()-b.getX();
-        		setVelx(0);
         		move(-diff, 0);
     		}
     	}
@@ -185,13 +176,11 @@ public class Square extends Object
     	{
     		if(rect.getMaxX()-b.getX()<rect.getMaxY()-b.getY()){
     			int diff =(int)rect.getMaxX()-b.getX();
-        		setVelx(0);
         		move(-diff, 0);
         		System.out.println("1");
     		}
     		else if(rect.getMaxX()-b.getX()>b.getY()-rect.getMaxY()){
     			int diff =(int)rect.getMaxY()-b.getY();
-        		setVely(0);
         		move(0, -diff);
         		System.out.println("2");
     		}
