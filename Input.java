@@ -32,15 +32,19 @@ public class Input extends JPanel implements ActionListener, KeyListener{
         int c=e.getKeyCode();
         if(c==KeyEvent.VK_RIGHT||c==KeyEvent.VK_D){
             p.getSquare().setVelx(2);
+            System.out.println("1");
         }
         if((c==KeyEvent.VK_UP||c==KeyEvent.VK_W)){
         	 p.getSquare().setVely(-2);
+        	 System.out.println("2");
         }
         if(c==KeyEvent.VK_LEFT||c==KeyEvent.VK_A){
         	 p.getSquare().setVelx(-2);
+        	 System.out.println("3");
         }
         if(c==KeyEvent.VK_DOWN||c==KeyEvent.VK_S){
         	 p.getSquare().setVely(2);
+        	 System.out.println("4");
         }
 
         if(c==KeyEvent.VK_SPACE){
@@ -53,7 +57,23 @@ public class Input extends JPanel implements ActionListener, KeyListener{
      * however, Player's facing direction will not change
      */
     public void keyReleased(KeyEvent e){
-    	//p.getSquare().setVelx(0);
+        int c=e.getKeyCode();
+        if(c==KeyEvent.VK_RIGHT||c==KeyEvent.VK_D){
+        	p.getSquare().setVelx(0);
+        }
+        if((c==KeyEvent.VK_UP||c==KeyEvent.VK_W)){
+        	p.getSquare().setVely(0);
+        }
+        if(c==KeyEvent.VK_LEFT||c==KeyEvent.VK_A){
+        	p.getSquare().setVelx(0);
+        }
+        if(c==KeyEvent.VK_DOWN||c==KeyEvent.VK_S){
+        	p.getSquare().setVely(0);
+        }
+
+        if(c==KeyEvent.VK_SPACE){
+           
+        }
     }
 	
 }
