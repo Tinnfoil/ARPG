@@ -9,7 +9,6 @@ public class Square extends Object
 	
     private int width;
     private int height;
-    private boolean gounded=false;
     Rectangle rect = new Rectangle();
     private double velx;
     private double vely;
@@ -24,33 +23,6 @@ public class Square extends Object
         setY(0);
         rect.setSize(width, height);
         rect.setBounds(getX(), getY(), width, height);
-    }
-    
-    public void jump(){
-    	setVely(-10);
-    }
-    
-    public void gravity(){
-    	//setVely(getVely()+.1);
-    }
-    
-    public void friction(){
-    	if(getVelx()!=0){
-    		if(getVelx()>0){
-    			setVelx(getVelx()-.1);
-    		}
-    		else{
-    			setVelx(getVelx()+.1);
-    		}
-    	}
-    }
-    
-    public boolean getGounded(){
-    	return gounded;
-    }
-    
-    public void setGounded(boolean b){
-    	gounded=b;
     }
     
     public int getWidth(){
@@ -80,11 +52,7 @@ public class Square extends Object
     }
     
     public boolean intersectsBlock(Block b){
-    	if(b.getRect().intersects(rect)){
-    		return true;
-    	}
-    	//gounded=false;
-    	return false;
+    	return b.getRect().intersects(rect);
     }
     
     public boolean[] intersectsBlocks(ArrayList<Block> list){
