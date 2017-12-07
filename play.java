@@ -8,12 +8,13 @@ import java.util.ArrayList;
 import javax.swing.JPanel;
 
 
-public class play extends JPanel implements Runnable
+public class Play extends JPanel implements Runnable
 {
 	private static final long serialVersionUID = 1L;//Ignore
 	
     Square s = new Square();
     Camera cam;
+    InputHandler h;
     ArrayList<Block> blocks= new ArrayList<Block>();
     
     private Thread thread;
@@ -21,7 +22,7 @@ public class play extends JPanel implements Runnable
     
     final double UPDATE=1.0/60.0;
     
-    public play(){
+    public Play(){
         Block b= new Block(100,500,500,20);
         Block c= new Block(655,100,20,500);
         Block d= new Block(100,400,100,20);
@@ -37,9 +38,12 @@ public class play extends JPanel implements Runnable
     public Square getSquare(){
     	return s;
     }
-    
+    public InputHandler getHandler(){
+    	return h;
+    }
     public void start(){
     	cam=new Camera(0,0);
+    	h=new InputHandler();
     	thread= new Thread(this);
     	thread.run();
     }
@@ -79,8 +83,10 @@ public class play extends JPanel implements Runnable
     			unprocessedTime-=UPDATE;
     			render=true;
     			//update game
+    			
     			updateSquare();//moves square according to velocities
     			cam.move(this);
+    			h.interpretInput(this);
     			for(int i=0;i<blocks.size();i++){//Collision Checks
     				if(s.intersectsBlocks(blocks)[i]){
     					s.fixPosition(blocks.get(i));
@@ -143,7 +149,7 @@ public class play extends JPanel implements Runnable
     }
     
 	public void updateSquare(){
-		s.move((int)s.getVelx(),(int)s.getVely());
+		s.move((double)s.getVelx(),(double)s.getVely());
 	}
 	
     
