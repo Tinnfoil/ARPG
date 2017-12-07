@@ -14,7 +14,7 @@ public class Render extends JPanel{
      int width;
      int height;
 	
-	public Render(play a){
+	public Render(Play a){
 		x=a.getSquare().getX();
 		y=a.getSquare().getY();
 		width=a.getSquare().getWidth();
