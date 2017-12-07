@@ -5,7 +5,7 @@ import javax.swing.JFrame;
 public class Screen{
 
 	public static void main(String[] args){
-        play g= new play();
+        Play g= new Play();
         Input i= new Input(g);
         JFrame frame= new JFrame();
         frame.setSize(700,1000);
