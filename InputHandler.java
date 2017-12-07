@@ -29,25 +29,25 @@ public class InputHandler {
     	double yVel = p.getSquare().getVely();
     	if(multiKey.contains("UP")){
     		if(yVel>-10)
-    		yVel += -2;
+    		yVel += -.7;
     		if(yVel>0)
     		yVel += -4;
     	}
     	if(multiKey.contains("DOWN")){
     		if(yVel<10)
-    		yVel += 2;
+    		yVel += .7;
     		if(yVel<0)
     		yVel += 4;
     	}
     	if(multiKey.contains("RIGHT")){
     		if(xVel<10)
-    		xVel += 2;
+    		xVel += .7;
     		if(xVel<0)
     		xVel += 4;
     	}	
     	if(multiKey.contains("LEFT")){
     		if(xVel>-10)
-    		xVel += -2;
+    		xVel += -.7;
     		if(xVel>0)
     		xVel += -4;
     	}
@@ -59,18 +59,18 @@ public class InputHandler {
     	}
     	if((multiKey.contains("UP") || multiKey.contains("DOWN")) && (!multiKey.contains("LEFT") && !multiKey.contains("RIGHT"))){
     		if(xVel>0){
-    			xVel-=1;
+    			xVel-=.3;
     		}
 			else if(xVel<0){
-				xVel+=1;
+				xVel+=.3;
 			}
     	}
     	if((multiKey.contains("LEFT") || multiKey.contains("RIGHT")) && (!multiKey.contains("UP") && !multiKey.contains("DOWN"))){
     		if(yVel>0){
-    			yVel-=1;
+    			yVel-=.3;
     		}
 			else if(yVel<0){
-				yVel+=1;
+				yVel+=.3;
 			}
     	}
     		
