@@ -1,16 +1,17 @@
 package ARPG;
 
-
+import javax.swing.*;
+import java.awt.event.*;
+import java.util.ArrayList;
 import javax.swing.*;
 import java.awt.event.*;
 
 public class Input extends JPanel implements ActionListener, KeyListener{
 
 	private static final long serialVersionUID = 1L;
+	Play p;
 	
-	play p;
-	
-	public Input(play p){
+	public Input(Play p){
 		this.p=p;
         addKeyListener(this);
         setFocusable(true);
@@ -26,25 +27,25 @@ public class Input extends JPanel implements ActionListener, KeyListener{
     }
 
     /**
-     * Movement commands for player. Also will set the direction of the player's movement.
+     * Movement commands for Player. Also will set the direction of the Player's movement.
      */
     public void keyPressed(KeyEvent e){
         int c=e.getKeyCode();
         if(c==KeyEvent.VK_RIGHT||c==KeyEvent.VK_D){
-            p.getSquare().setVelx(2);
-            System.out.println("1");
+       	 	p.getHandler().addInput("RIGHT");
+       	 	p.getHandler().readList();
         }
         if((c==KeyEvent.VK_UP||c==KeyEvent.VK_W)){
-        	 p.getSquare().setVely(-2);
-        	 System.out.println("2");
+        	p.getHandler().addInput("UP");
+        	p.getHandler().readList();
         }
         if(c==KeyEvent.VK_LEFT||c==KeyEvent.VK_A){
-        	 p.getSquare().setVelx(-2);
-        	 System.out.println("3");
+        	p.getHandler().addInput("LEFT");
+        	p.getHandler().readList();
         }
         if(c==KeyEvent.VK_DOWN||c==KeyEvent.VK_S){
-        	 p.getSquare().setVely(2);
-        	 System.out.println("4");
+        	p.getHandler().addInput("DOWN");
+        	p.getHandler().readList();
         }
 
         if(c==KeyEvent.VK_SPACE){
@@ -53,27 +54,29 @@ public class Input extends JPanel implements ActionListener, KeyListener{
     }
 
     /**
-     * Stops the player from moving if they release they movement keys. 
+     * Stops the Player from moving if they release they movement keys. 
      * however, Player's facing direction will not change
      */
     public void keyReleased(KeyEvent e){
         int c=e.getKeyCode();
         if(c==KeyEvent.VK_RIGHT||c==KeyEvent.VK_D){
-        	p.getSquare().setVelx(0);
+        	p.getHandler().removeInput("RIGHT");
+        	p.getHandler().readList();
         }
         if((c==KeyEvent.VK_UP||c==KeyEvent.VK_W)){
-        	p.getSquare().setVely(0);
+        	p.getHandler().removeInput("UP");
+        	p.getHandler().readList();
         }
         if(c==KeyEvent.VK_LEFT||c==KeyEvent.VK_A){
-        	p.getSquare().setVelx(0);
+        	p.getHandler().removeInput("LEFT");
+        	p.getHandler().readList();
         }
         if(c==KeyEvent.VK_DOWN||c==KeyEvent.VK_S){
-        	p.getSquare().setVely(0);
+        	p.getHandler().removeInput("DOWN");
+        	p.getHandler().readList();
         }
-
         if(c==KeyEvent.VK_SPACE){
            
         }
     }
-	
 }
