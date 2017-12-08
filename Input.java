@@ -2,9 +2,6 @@ package ARPG;
 
 import javax.swing.*;
 import java.awt.event.*;
-import java.util.ArrayList;
-import javax.swing.*;
-import java.awt.event.*;
 
 public class Input extends JPanel implements ActionListener, KeyListener{
 

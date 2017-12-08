@@ -10,8 +10,6 @@ public class Square extends Object
     private int width;
     private int height;
     Rectangle rect = new Rectangle();
-    private double velx;
-    private double vely;
     /**
      * Constructor for objects of class Square
      */
@@ -31,24 +29,11 @@ public class Square extends Object
     public int getHeight(){
     	return height;
     }
-    public double getVelx(){
-        return velx;
-    }
-    public void setVelx(double x){
-        velx=x;
-    }
     
-    public double getVely(){
-        return vely;
-    }
-    public void setVely(double y){
-        vely=y;
-    }
-    
-    public void move(int x, int y){
-    	rect.translate(x, y);
-    	setX(getX()+x);
-    	setY(getY()+y);
+    public void move(double x, double y){
+    	rect.translate((int)x, (int)y);
+    	setX(getX()+(int)x);
+    	setY(getY()+(int)y);
     }
     
     public boolean intersectsBlock(Block b){
@@ -61,18 +46,28 @@ public class Square extends Object
     		Block b=list.get(i);
     		if(intersectsBlock(b)){
     			blist[i]=true;
-    			if(b.getY()<=(int) rect.getMaxY()){
-    				setVely(0);
+    			double currvelx=getVelx();
+    			double currvely=getVely();
+    			if((b.getY()<=(int) rect.getMaxY())){
+    				//setVely(0);
+    				currvely+=-getVely();
+    				System.out.println("bottom stop");
     			}
-    			else if(b.getX()<=(int) rect.getMaxX()){
-    				setVelx(0);
+    			if(b.getX()<=(int) rect.getMaxX()){
+    				currvelx+=-getVelx();
+    				//setVelx(0);
     			}
-    			else if((b.getY()+b.getHeight())>=(int)rect.getMinY()){
-    				setVely(0);
+    			if((b.getMaxY())>=(int)rect.getMinY()){
+    				currvely+=getVely();
+    				//setVely(0);
+    				System.out.println("top stop");
     			}
-    			else if((b.getX()+b.getWidth())>=(int)rect.getMinX()){
-    				setVelx(0);
+    			if((b.getMaxX())>=(int)rect.getMinX()){
+    				currvelx+=getVelx();
+    				//setVelx(0);
     			}
+    			setVelx(currvelx);
+    			setVely(currvely);
     		}
     		else{
     			blist[i]=false;
@@ -86,7 +81,6 @@ public class Square extends Object
      * @param b
      */
 	public void fixPosition(Block b){
-		System.out.println("working");
     	if(rect.contains(b.getX(),b.getY(), b.getWidth(), 1)){
     		int diff =b.getY()-(int)rect.getMaxY();
     		move(0, diff);
@@ -103,8 +97,8 @@ public class Square extends Object
     		int diff = (int) ((b.getX()+b.getWidth())-(rect.getMinX()));
     		move(diff,0);
     	}
-    	if(b.getRect().contains(rect.getMinX(), rect.getMaxY()))
-    	{// add to all and remove top to work||b.getrect().contains((rect.getMinX()+xscale),(rect.getMaxY()), width-xscale, 1)
+    	if(b.getRect().contains(rect.getMinX(), rect.getMaxY()))//bottom left
+    	{
     		if(rect.getMaxY()-b.getY()<b.getMaxX()-rect.getX()){
         		int diff =(int)rect.getMaxY()-b.getY();
         		move(0, -diff);
@@ -116,7 +110,7 @@ public class Square extends Object
         		System.out.println("2");
     		}
     	}
-    	else if(b.getRect().contains(rect.getMinX(), rect.getMinY()))//((b.getMaxX()-rect.getX())<(b.getMaxY()-rect.getY()))
+    	else if(b.getRect().contains(rect.getMinX(), rect.getMinY()))//top left
     	{
     		if(b.getMaxX()-rect.getMinX()<b.getMaxY()-rect.getMinY()){
         		int diff =b.getMaxX()-(int)rect.getMinX();
@@ -129,28 +123,30 @@ public class Square extends Object
         		System.out.println("4");
     		}
     	}
-    	else if(b.getRect().contains(rect.getMaxX(),rect.getMinY()))
+    	else if(b.getRect().contains(rect.getMaxX(),rect.getMinY()))//top right
     	{
     		if(b.getMaxY()-rect.getMinY()<rect.getMaxX()-b.getX()){
     			int diff =b.getMaxY()-(int)rect.getMinY();
         		move(0, diff);
+        		System.out.println("5");
     		}
     		else if(b.getMaxY()-rect.getMinY()>rect.getMaxX()-b.getX()){
     			int diff =(int)rect.getMaxX()-b.getX();
         		move(-diff, 0);
+        		System.out.println("6");
     		}
     	}
-    	else if(b.getRect().contains(rect.getMaxX(),rect.getMaxY()))
+    	else if(b.getRect().contains(rect.getMaxX(),rect.getMaxY()))//bottom right
     	{
     		if(rect.getMaxX()-b.getX()<rect.getMaxY()-b.getY()){
     			int diff =(int)rect.getMaxX()-b.getX();
         		move(-diff, 0);
-        		System.out.println("1");
+        		System.out.println("7");
     		}
     		else if(rect.getMaxX()-b.getX()>b.getY()-rect.getMaxY()){
     			int diff =(int)rect.getMaxY()-b.getY();
         		move(0, -diff);
-        		System.out.println("2");
+        		System.out.println("8");
     		}
     	}
 
