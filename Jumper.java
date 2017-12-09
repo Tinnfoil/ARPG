@@ -9,6 +9,7 @@ public class Jumper extends AI{
 	double launchx; double launchy;
 	boolean jumping;
 	public Jumper(int x, int y, int size, double vel){
+		super(x,y,size);
 		setX(x);
 		setY(y);
 		this.vel=vel;
@@ -17,7 +18,6 @@ public class Jumper extends AI{
 		jumpdistance=300;
 		currjumpdistance=0;
 		setSize(size);
-		getRect().setSize(getSize(),getSize());
 	}
 	
 	public void tick(Play p){//thinking method

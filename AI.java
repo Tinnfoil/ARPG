@@ -4,15 +4,11 @@ import java.awt.Rectangle;
 
 public class AI extends Object{
 
-	Rectangle rect;
 	int size;
-	public AI(){
-		rect= new Rectangle(0,0,0,0);	
-		size=0;
-	}
-	
-	public Rectangle getRect(){
-		return rect;
+	public AI(int x, int y, int size){
+		rect= new Rectangle(x,y,size,size);
+		setRect(rect);
+		this.size= size;
 	}
 	
 	public int getSize(){
