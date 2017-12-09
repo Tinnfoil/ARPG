@@ -15,6 +15,7 @@ public class Play extends JPanel implements Runnable
     Square s = new Square();
     Camera cam;
     InputHandler h;
+    BlockMap bm= new BlockMap(0,0);
     ArrayList<Block> blocks= new ArrayList<Block>();
     ArrayList<AI> AIs= new ArrayList<AI>();
     
@@ -24,18 +25,10 @@ public class Play extends JPanel implements Runnable
     final double UPDATE=1.0/60.0;
     
     public Play(){
-    	Jumper j= new Jumper(0,0,30,2);
+    	bm.map1();
+    	bm.addBlocks(blocks);
+    	Jumper j= new Jumper(-100,-100,30,2);
     	AIs.add(j);
-        Block b= new Block(100,500,300,20);
-        Block c= new Block(655,100,20,250);
-        Block d= new Block(100,400,100,20);
-        Block e= new Block(100,150,20,100);
-        Block f= new Block(400,300,100,20);
-    	blocks.add(b);
-    	blocks.add(c);
-    	blocks.add(d);
-    	blocks.add(e);
-    	blocks.add(f);
     }
     
     public Square getSquare(){
@@ -91,8 +84,15 @@ public class Play extends JPanel implements Runnable
     			cam.move(this);
     			h.interpretInput(this);
     			for(int i=0;i<blocks.size();i++){//Collision Checks
-    				if(s.intersectsBlocks(blocks)[i]){
-    					s.fixPosition(blocks.get(i));
+    				Block b= blocks.get(i);
+    				int bmidx=(b.getX()+b.getMaxX())/2;
+    				int bmidy=(b.getY()+b.getMaxY())/2;
+    				int smidx=(s.getX()+(int)s.getRect().getMaxX())/2;
+    				int smidy=(s.getY()+(int)s.getRect().getMaxY())/2;
+    				if(Math.sqrt(Math.pow(bmidx-smidx, 2)+Math.pow(bmidy-smidy, 2))<500){
+    					if(s.intersectsBlocks(blocks)[i]){
+    						s.fixPosition(blocks.get(i));
+    					}
     				}
     			}
     			for(int i=0;i<AIs.size();i++){

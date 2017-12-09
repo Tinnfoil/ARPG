@@ -21,10 +21,11 @@ public class Jumper extends AI{
 	}
 	
 	public void tick(Play p){//thinking method
+		System.out.println("Shuhsudsh");
 		int x=(getX()+getX()+getSize())/2;
 		int y=(getY()+getY()+getSize())/2;
-		int midx=(p.getSquare().getX()+(int)p.getSquare().getRect().getMaxX())/2;
-		int midy=(p.getSquare().getY()+(int)p.getSquare().getRect().getMaxY())/2;
+		int midx=((int)p.getSquare().getRect().getX()+(int)p.getSquare().getRect().getMaxX())/2;
+		int midy=((int)p.getSquare().getRect().getY()+(int)p.getSquare().getRect().getMaxY())/2;
 		if(Math.sqrt(Math.pow(x-midx, 2)+Math.pow(y-midy, 2))>=jumprange&&!jumping){
 			launchx=1;
 			launchy=1;
@@ -37,6 +38,7 @@ public class Jumper extends AI{
 	}
 	
 	public void followPoint(int x, int y, int midx, int midy){
+		System.out.println("dap");
 		if(Math.abs(x-midx)<vel){
 			if((x>midx)){
 				setX((int)(getX()-1));
