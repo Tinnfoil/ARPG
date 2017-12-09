@@ -30,6 +30,10 @@ public class Square extends Object
     	return height;
     }
     
+    public Rectangle getRect(){
+    	return rect;
+    }
+    
     public void move(double x, double y){
     	rect.translate((int)x, (int)y);
     	setX(getX()+(int)x);

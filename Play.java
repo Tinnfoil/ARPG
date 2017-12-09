@@ -16,13 +16,16 @@ public class Play extends JPanel implements Runnable
     Camera cam;
     InputHandler h;
     ArrayList<Block> blocks= new ArrayList<Block>();
+    ArrayList<AI> AIs= new ArrayList<AI>();
     
     private Thread thread;
     private boolean running=false;
     
-    final double UPDATE=1.0/30.0;
+    final double UPDATE=1.0/60.0;
     
     public Play(){
+    	Jumper j= new Jumper(0,0,30,2);
+    	AIs.add(j);
         Block b= new Block(100,500,300,20);
         Block c= new Block(655,100,20,250);
         Block d= new Block(100,400,100,20);
@@ -92,6 +95,13 @@ public class Play extends JPanel implements Runnable
     					s.fixPosition(blocks.get(i));
     				}
     			}
+    			for(int i=0;i<AIs.size();i++){
+    				if(AIs.get(i).getClass()==Jumper.class){
+    					((Jumper)AIs.get(i)).tick(this);
+    					
+    					//((Jumper)AIs.get(i)).followSquare(s);
+    				}
+    			}
     			//
     			if(frameTime>=1.0){
     				//per second events
@@ -138,6 +148,11 @@ public class Play extends JPanel implements Runnable
             for(int i=0;i<blocks.size();i++){
             	Block b= blocks.get(i);
             	g.drawRect(b.getX(), b.getY(), b.getWidth(), b.getHeight());
+            }
+            for(int i=0;i<AIs.size();i++){
+            	AI a= AIs.get(i);
+            	g.drawRect((int)a.getX(), (int)a.getY(), (int)a.getSize(), (int)a.getSize());
+
             }
             
             g2d.translate(cam.getX(), cam.getY());//end of cam

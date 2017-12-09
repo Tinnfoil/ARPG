@@ -1,9 +1,11 @@
 package ARPG;
 
 import javax.swing.*;
+
+import java.awt.Point;
 import java.awt.event.*;
 
-public class Input extends JPanel implements ActionListener, KeyListener{
+public class Input extends JPanel implements ActionListener, KeyListener, MouseListener{
 
 	private static final long serialVersionUID = 1L;
 	Play p;
@@ -76,4 +78,36 @@ public class Input extends JPanel implements ActionListener, KeyListener{
            
         }
     }
+
+	public void mouseClicked(MouseEvent e) {
+		//System.out.println("Clicked");
+		
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseExited(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mousePressed(MouseEvent e) {
+		System.out.println("Clicked");
+		Point p=e.getPoint();		
+		System.out.println("X:"+p.getX()+" Y:"+p.getY());
+		
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

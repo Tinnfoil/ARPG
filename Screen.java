@@ -7,6 +7,7 @@ public class Screen{
 	public static void main(String[] args){
         Play g= new Play();
         Input i= new Input(g);
+        g.addMouseListener(i);
         JFrame frame= new JFrame();
         frame.setSize(700,1000);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
