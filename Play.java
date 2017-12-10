@@ -15,7 +15,7 @@ public class Play extends JPanel implements Runnable
     Square s = new Square();
     Camera cam;
     InputHandler h;
-    BlockMap bm= new BlockMap(0,0);
+    BlockMap bm= new BlockMap(0,0,0,0);
     ArrayList<Block> blocks= new ArrayList<Block>();
     ArrayList<AI> AIs= new ArrayList<AI>();
     
@@ -27,8 +27,14 @@ public class Play extends JPanel implements Runnable
     public Play(){
     	bm.map1();
     	bm.addBlocks(blocks);
-    	Jumper j= new Jumper(-100,-100,30,2);
+    	Jumper j= new Jumper(-300,-300,30,2);
+    	Jumper a= new Jumper(-200,-400,30,2);
+    	Jumper b= new Jumper(-400,-300,30,2);
+    	Jumper c= new Jumper(-500,-300,30,2);
     	AIs.add(j);
+    	AIs.add(a);
+    	AIs.add(b);
+    	AIs.add(c);
     }
     
     public Square getSquare(){
@@ -36,6 +42,12 @@ public class Play extends JPanel implements Runnable
     }
     public InputHandler getHandler(){
     	return h;
+    }
+    public ArrayList<Block> getBlocks(){
+    	return blocks;
+    }
+    public BlockMap getBlockMap(){
+    	return bm;
     }
     public void start(){
     	cam=new Camera(0,0);
@@ -97,9 +109,22 @@ public class Play extends JPanel implements Runnable
     			}
     			for(int i=0;i<AIs.size();i++){
     				if(AIs.get(i).getClass()==Jumper.class){
-    					((Jumper)AIs.get(i)).tick(this);
+    						((Jumper)AIs.get(i)).tick(this);
     					
     					//((Jumper)AIs.get(i)).followSquare(s);
+    	    			for(int j=0;j<blocks.size();j++){//Collision Checks
+    	    				Block b= blocks.get(j);
+    	    				int bmidx=(b.getX()+b.getMaxX())/2;
+    	    				int bmidy=(b.getY()+b.getMaxY())/2;
+    	    				int smidx=(AIs.get(i).getX()+(int)AIs.get(i).getRect().getMaxX())/2;
+    	    				int smidy=(AIs.get(i).getY()+(int)AIs.get(i).getRect().getMaxY())/2;
+    	    				if(Math.sqrt(Math.pow(bmidx-smidx, 2)+Math.pow(bmidy-smidy, 2))<500){
+    	    					if(AIs.get(i).intersectsBlocks(blocks)[j]){
+    	    						(AIs.get(i)).fixPosition(blocks.get(j));
+    	    					}
+    	    				}
+    	    			}
+
     				}
     			}
     			//
@@ -144,10 +169,11 @@ public class Play extends JPanel implements Runnable
         	g2d.translate(-cam.getX(), -cam.getY());//begins cam
         	
             g.drawRect(s.getX(),s.getY(),s.getWidth(),s.getHeight());
-            
+            g.drawArc(100, 100, 30, 30, 0, 140);
+            g.drawArc(100, 100, 10, 10, 0, 140);
             for(int i=0;i<blocks.size();i++){
             	Block b= blocks.get(i);
-            	g.drawRect(b.getX(), b.getY(), b.getWidth(), b.getHeight());
+            	g.fillRect(b.getX(), b.getY(), b.getWidth(), b.getHeight());
             }
             for(int i=0;i<AIs.size();i++){
             	AI a= AIs.get(i);

@@ -1,8 +1,13 @@
 package ARPG;
 
+import java.awt.Rectangle;
+
+/**
+ * Subclass of AI 
+ * AI That follows the square and jumps at the square when within a distance from it. 
+ */
 public class Jumper extends AI{
 
-	double vel;
 	int jumprange;
 	int jumpdistance;
 	int currjumpdistance;
@@ -12,61 +17,87 @@ public class Jumper extends AI{
 		super(x,y,size);
 		setX(x);
 		setY(y);
-		this.vel=vel;
+		setVelx(vel);
+		setVely(vel);
 		jumprange=200;//pixels
 		jumping =false;
 		jumpdistance=300;
 		currjumpdistance=0;
+		Rectangle Rect= new Rectangle(getX(),getY(),size,size);
+		setRect(Rect);
 		setSize(size);
 	}
 	
+	/**
+	 * thinking and action method of the AI 
+	 * method is constantly called by Play class.
+	 * AI Movement System(Based on Square/Player movement)
+	 * 1.Moves object according to velocities
+	 * 2.Sets new velocities according to AI or methods
+	 * 3.Collision system checks if the "next position" will collide with anything and fix velocities accordingly
+	 * 4.Repeat
+	 * @param p
+	 */
 	public void tick(Play p){//thinking method
-		System.out.println("Shuhsudsh");
-		int x=(getX()+getX()+getSize())/2;
-		int y=(getY()+getY()+getSize())/2;
-		int midx=((int)p.getSquare().getRect().getX()+(int)p.getSquare().getRect().getMaxX())/2;
-		int midy=((int)p.getSquare().getRect().getY()+(int)p.getSquare().getRect().getMaxY())/2;
-		if(Math.sqrt(Math.pow(x-midx, 2)+Math.pow(y-midy, 2))>=jumprange&&!jumping){
-			launchx=1;
-			launchy=1;
-			followPoint(x,y,midx,midy);
-		}
-		else{
-			jumping=true;
-			launch((int)launchx*10,(int)launchy*10);
-		}
+		move((double)getVelx(),(double)getVely());
+		int smidx=(p.getSquare().getX()+(int)p.getSquare().getRect().getMaxX())/2;
+		int smidy=(p.getSquare().getY()+(int)p.getSquare().getRect().getMaxY())/2;
+		followPoint((int)(getX()+getX()+getRect().getWidth())/2,(int)(getY()+getY()+getRect().getHeight())/2,smidx,smidy);
 	}
 	
+	/**
+	 * copy of collision system of square
+	 * @param p
+	 */
+	public void collides(Play p){
+		for(int i=0;i<p.getBlocks().size();i++){//Collision Checks
+			Block b= p.getBlocks().get(i);
+			int bmidx=(b.getX()+b.getMaxX())/2;
+			int bmidy=(b.getY()+b.getMaxY())/2;
+			int smidx=(getX()+(int)getRect().getMaxX())/2;
+			int smidy=(getY()+(int)getRect().getMaxY())/2;
+			if(Math.sqrt(Math.pow(bmidx-smidx, 2)+Math.pow(bmidy-smidy, 2))<200){
+				if(intersectsBlocks(p.getBlocks())[i]){
+					fixPosition(p.getBlocks().get(i));
+				}
+			}
+		}
+	}
+	/**
+	 * changes objects' velocities(acceleration based) 
+	 * so it can follow the specified point(Does not move object)
+	 * @param x object's x coordinate
+	 * @param y object's y coordinate
+	 * @param midx point's x coordinate
+	 * @param midy point's y coordinate
+	 */
 	public void followPoint(int x, int y, int midx, int midy){
-		System.out.println("dap");
-		if(Math.abs(x-midx)<vel){
-			if((x>midx)){
-				setX((int)(getX()-1));
-			}
-			else if((x<midx)){
-				setX((int)(getX()+1));
-			}
+		if(Math.abs(x-midx)<=getVelx()){
+			setVelx(0);
 		}
-		else if((x>midx)&&Math.abs(x-midx)>vel){
-			setX((int)(getX()-vel));
+		else if((x>midx)&&Math.abs(x-midx)>getVelx()){
+			if(getVelx()>-3){
+				setVelx(getVelx()-.1);
+				}
 		}
-		else if((x<midx)&&Math.abs(x-midx)>vel){
-			setX((int)(getX()+vel));
+		else if((x<midx)&&Math.abs(x-midx)>getVelx()){
+			if(getVelx()<3){
+				setVelx(getVelx()+.1);
+			}
 		}
 
-		if(Math.abs(y-midy)<vel){
-			if((y>midy)){
-				setY((int)(getY()-1));
-			}
-			else if((y<midy)){
-				setY((int)(getY()+1));
+		if(Math.abs(y-midy)<=getVely()){
+			setVely(0);
+		}
+		else if((y>midy)&&Math.abs(y-midy)>getVely()){
+			if(getVely()>-3){
+			setVely(getVely()-.1);
 			}
 		}
-		else if(y>midy){
-			setY((int)(getY()-vel));
-		}
-		else if(y<midy){
-			setY((int)(getY()+vel));
+		else if((y<midy)&&Math.abs(y-midy)>getVely()){
+			if(getVely()<3){
+				setVely(getVely()+.1);
+			}
 		}
 	}
 	
@@ -85,5 +116,5 @@ public class Jumper extends AI{
 		}
 
 	}
-	
+
 }

@@ -1,6 +1,7 @@
 package ARPG;
 
 import java.awt.Rectangle;
+import java.util.ArrayList;
 
 public class AI extends Object{
 
@@ -22,5 +23,6 @@ public class AI extends Object{
 	public void tick(){//override in subclass(Thinking method in the AIs)
 		
 	}
+	
 	
 }
