@@ -9,6 +9,7 @@ public class Screen{
         Input i= new Input(g);
         g.addMouseListener(i);
         JFrame frame= new JFrame();
+        //frame.setSize(500,500);
         frame.setSize(1300,1000);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.add(i);

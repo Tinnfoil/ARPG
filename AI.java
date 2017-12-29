@@ -1,7 +1,6 @@
 package ARPG;
 
 import java.awt.Rectangle;
-import java.util.ArrayList;
 
 public class AI extends Object{
 
@@ -24,5 +23,8 @@ public class AI extends Object{
 		
 	}
 	
+	public boolean intersects(Rectangle rect){
+		 return getRect().intersects(rect);
+	}
 	
 }

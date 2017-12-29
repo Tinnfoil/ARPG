@@ -3,9 +3,14 @@ package ARPG;
 import java.util.ArrayList;
 
 public class InputHandler {
+	
+	Play p;
 	private ArrayList<String> multiKey;
-	public InputHandler(){
+	Time t= new Time();
+	
+	public InputHandler(Play p){
 		multiKey = new ArrayList<String>();
+		this.p=p;
 	}
     public void readList(){
         for(int i=0; i <multiKey.size(); i++) //
@@ -88,7 +93,22 @@ public class InputHandler {
 				yVel++;
 			}
     	}
+    	if(multiKey.contains("SPACE")){
+    		t.startTimer();
+    		t.tick();
+    		if(t.getTimer()>60){
+    		if(Math.abs(xVel)<15){
+    			xVel*=2;
+    		}
+    		if(Math.abs(yVel)<15){
+    			yVel*=2;
+    		}
+    		t.setTiming(false);
+    		}
+    	}
     	p.getSquare().setVelx(xVel);
     	p.getSquare().setVely(yVel);
+
+    	
     }
 }

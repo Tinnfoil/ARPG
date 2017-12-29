@@ -18,6 +18,11 @@ public class Play extends JPanel implements Runnable
     BlockMap bm= new BlockMap(0,0,0,0);
     ArrayList<Block> blocks= new ArrayList<Block>();
     ArrayList<AI> AIs= new ArrayList<AI>();
+    ArrayList<Projectile> Projectiles = new ArrayList<Projectile>();
+    
+    int fps;
+    int camxoff=600;
+    int camyoff=400;
     
     private Thread thread;
     private boolean running=false;
@@ -27,6 +32,14 @@ public class Play extends JPanel implements Runnable
     public Play(){
     	bm.map1();
     	bm.addBlocks(blocks);
+    	Block f= new Block(-1100,-1000,100,1000);
+    	Block g= new Block(-1000,-1100,1000,100);
+    	//Block h= new Block(-1000,0,1000,100);
+    	//Block k= new Block(0,-1000,100,1000);
+    	blocks.add(f);
+    	blocks.add(g);
+    	//blocks.add(h);
+    	//blocks.add(k);
     	Jumper j= new Jumper(-300,-300,30,2);
     	Jumper a= new Jumper(-200,-400,30,2);
     	Jumper b= new Jumper(-400,-300,30,2);
@@ -50,8 +63,8 @@ public class Play extends JPanel implements Runnable
     	return bm;
     }
     public void start(){
-    	cam=new Camera(0,0);
-    	h=new InputHandler();
+    	cam=new Camera(0,0,camxoff,camyoff);
+    	h=new InputHandler(this);
     	thread= new Thread(this);
     	thread.run();
     }
@@ -75,7 +88,7 @@ public class Play extends JPanel implements Runnable
     	
     	double frameTime=0;
     	int frames=0;
-    	int fps=0;
+    	fps=0;
     	
     	while(running){
     		render=false;
@@ -97,12 +110,11 @@ public class Play extends JPanel implements Runnable
     			h.interpretInput(this);
     			for(int i=0;i<blocks.size();i++){//Collision Checks
     				Block b= blocks.get(i);
-    				int bmidx=(b.getX()+b.getMaxX())/2;
-    				int bmidy=(b.getY()+b.getMaxY())/2;
     				int smidx=(s.getX()+(int)s.getRect().getMaxX())/2;
     				int smidy=(s.getY()+(int)s.getRect().getMaxY())/2;
-    				if(Math.sqrt(Math.pow(bmidx-smidx, 2)+Math.pow(bmidy-smidy, 2))<500){
-    					if(s.intersectsBlocks(blocks)[i]){
+    				if(b.distance(smidx, smidy)<500){
+    					if(s.getRect().intersects(b.getRect())){
+    						s.fixVelocity(b);
     						s.fixPosition(blocks.get(i));
     					}
     				}
@@ -114,18 +126,32 @@ public class Play extends JPanel implements Runnable
     					//((Jumper)AIs.get(i)).followSquare(s);
     	    			for(int j=0;j<blocks.size();j++){//Collision Checks
     	    				Block b= blocks.get(j);
-    	    				int bmidx=(b.getX()+b.getMaxX())/2;
-    	    				int bmidy=(b.getY()+b.getMaxY())/2;
     	    				int smidx=(AIs.get(i).getX()+(int)AIs.get(i).getRect().getMaxX())/2;
     	    				int smidy=(AIs.get(i).getY()+(int)AIs.get(i).getRect().getMaxY())/2;
-    	    				if(Math.sqrt(Math.pow(bmidx-smidx, 2)+Math.pow(bmidy-smidy, 2))<500){
+    	    				if(b.distance(smidx, smidy)<500){
     	    					if(AIs.get(i).intersectsBlocks(blocks)[j]){
     	    						(AIs.get(i)).fixPosition(blocks.get(j));
     	    					}
     	    				}
     	    			}
+    	    			for(int j=0;j<Projectiles.size();j++){
+    	    			if(AIs.get(i).intersects(Projectiles.get(j).getRect())){
+    	    				AIs.remove(i);
+    	    				Projectiles.remove(j);
+    	    				i--;
+    	    			}
+    	    			}
 
     				}
+    			}
+    			for(int i=0;i<Projectiles.size();i++){//Collision Checks
+    				if(Projectiles.get(i).currentTime>=Projectiles.get(i).lifeTime){
+    					Projectiles.remove(i);
+    					i--;
+    				}
+    				else{
+    				Projectiles.get(i).tick();
+    				}    			
     			}
     			//
     			if(frameTime>=1.0){
@@ -133,7 +159,6 @@ public class Play extends JPanel implements Runnable
     				frameTime=0;
     				fps=frames;
     				frames=0;
-    				System.out.println("FPS:"+fps);
     			}
     		}
     		if(render)
@@ -167,18 +192,31 @@ public class Play extends JPanel implements Runnable
         g.setColor(Color.BLACK);
         try{
         	g2d.translate(-cam.getX(), -cam.getY());//begins cam
+        	g.drawString("FPS: "+fps,(int)cam.getX()+5,(int)cam.getY()+20);
         	
-            g.drawRect(s.getX(),s.getY(),s.getWidth(),s.getHeight());
-            g.drawArc(100, 100, 30, 30, 0, 140);
+        	//g2d.rotate(Math.toRadians(45));
+            //g2d.drawRect(s.getX(),s.getY(),s.getWidth(),s.getHeight());
+            //g2d.rotate(-Math.toRadians(45));
+            g2d.drawRect(s.getX(),s.getY(),s.getWidth(),s.getHeight());
+            g.drawArc(100, 100, 30, 30, 0, 360);
             g.drawArc(100, 100, 10, 10, 0, 140);
+            for(int i=0;i<5;i++){
+            	for(int j=0;j<5;j++){
+            		g.drawRect(-1000+(i*200),-1000+(j*200),200,200);
+            	}
+            }
             for(int i=0;i<blocks.size();i++){
             	Block b= blocks.get(i);
-            	g.fillRect(b.getX(), b.getY(), b.getWidth(), b.getHeight());
+            	g.drawRect(b.getX(), b.getY(), b.getWidth(), b.getHeight());
             }
             for(int i=0;i<AIs.size();i++){
             	AI a= AIs.get(i);
             	g.drawRect((int)a.getX(), (int)a.getY(), (int)a.getSize(), (int)a.getSize());
 
+            }
+            for(int i=0;i<Projectiles.size();i++){
+            	Projectile p=Projectiles.get(i);
+            	g.drawRect((int)p.getRect().getX(),(int)p.getRect().getY(),(int)p.getRect().getWidth(),(int)p.getRect().getHeight());
             }
             
             g2d.translate(cam.getX(), cam.getY());//end of cam
@@ -188,9 +226,25 @@ public class Play extends JPanel implements Runnable
         }
         
     }
+
     
 	public void updateSquare(){
 		s.move((double)s.getVelx(),(double)s.getVely());
+	}
+	
+	/**
+	 * 
+	 * @param x1 spawn x coordinate of projectile
+	 * @param y1 spawn y coordinate of projectile
+	 * @param x2 target x coordinate of projectile
+	 * @param y2 target y coordinate of projectile
+	 */
+	public void spawnProjectile(int x1, int y1, int x2, int y2){
+		Projectile p= new Projectile(x1,y1,x2,y2);
+		Projectiles.add(p);
+		//Projectile d= new Projectile(x2,y2,x2,y2);
+		//Projectiles.add(d);
+
 	}
 	
     

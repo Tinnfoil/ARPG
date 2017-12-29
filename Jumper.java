@@ -11,8 +11,12 @@ public class Jumper extends AI{
 	int jumprange;
 	int jumpdistance;
 	int currjumpdistance;
+	Time t=new Time();
+	int x;
+	int y;
 	double launchx; double launchy;
 	boolean jumping;
+	boolean charged;
 	public Jumper(int x, int y, int size, double vel){
 		super(x,y,size);
 		setX(x);
@@ -39,10 +43,30 @@ public class Jumper extends AI{
 	 * @param p
 	 */
 	public void tick(Play p){//thinking method
+		
 		move((double)getVelx(),(double)getVely());
 		int smidx=(p.getSquare().getX()+(int)p.getSquare().getRect().getMaxX())/2;
 		int smidy=(p.getSquare().getY()+(int)p.getSquare().getRect().getMaxY())/2;
-		followPoint((int)(getX()+getX()+getRect().getWidth())/2,(int)(getY()+getY()+getRect().getHeight())/2,smidx,smidy);
+		
+		if(jumping==false&&Math.sqrt(Math.pow((getX()+getX()+getRect().getWidth())/2-smidx, 2)+Math.pow((getY()+getY()+getRect().getHeight())/2-smidy, 2))<jumprange){
+			//System.out.println("SetTrue");
+			if(Math.abs(getVelx())<2){
+			setVely(getVelx()*2);
+			}
+			if(Math.abs(getVely())<2){
+			setVely(getVely()*2);
+			}
+			jumping=true;
+		}
+		else if(jumping==false){
+			followPoint((int)(getX()+getX()+getRect().getWidth())/2,(int)(getY()+getY()+getRect().getHeight())/2,smidx,smidy);
+			x=smidx;
+			y=smidy;
+		}
+		else if(jumping==true){
+			launch(x,y,smidx,smidy);
+		}
+
 	}
 	
 	/**
@@ -54,15 +78,14 @@ public class Jumper extends AI{
 			Block b= p.getBlocks().get(i);
 			int bmidx=(b.getX()+b.getMaxX())/2;
 			int bmidy=(b.getY()+b.getMaxY())/2;
-			int smidx=(getX()+(int)getRect().getMaxX())/2;
-			int smidy=(getY()+(int)getRect().getMaxY())/2;
-			if(Math.sqrt(Math.pow(bmidx-smidx, 2)+Math.pow(bmidy-smidy, 2))<200){
+			if(distance(bmidx,bmidy)<200){
 				if(intersectsBlocks(p.getBlocks())[i]){
 					fixPosition(p.getBlocks().get(i));
 				}
 			}
 		}
 	}
+	
 	/**
 	 * changes objects' velocities(acceleration based) 
 	 * so it can follow the specified point(Does not move object)
@@ -76,13 +99,13 @@ public class Jumper extends AI{
 			setVelx(0);
 		}
 		else if((x>midx)&&Math.abs(x-midx)>getVelx()){
-			if(getVelx()>-3){
-				setVelx(getVelx()-.1);
+			if(getVelx()>-4){
+				setVelx(getVelx()-.2);
 				}
 		}
 		else if((x<midx)&&Math.abs(x-midx)>getVelx()){
-			if(getVelx()<3){
-				setVelx(getVelx()+.1);
+			if(getVelx()<4){
+				setVelx(getVelx()+.2);
 			}
 		}
 
@@ -90,25 +113,36 @@ public class Jumper extends AI{
 			setVely(0);
 		}
 		else if((y>midy)&&Math.abs(y-midy)>getVely()){
-			if(getVely()>-3){
-			setVely(getVely()-.1);
+			if(getVely()>-4){
+			setVely(getVely()-.2);
 			}
 		}
 		else if((y<midy)&&Math.abs(y-midy)>getVely()){
-			if(getVely()<3){
-				setVely(getVely()+.1);
+			if(getVely()<4){
+				setVely(getVely()+.2);
 			}
 		}
 	}
 	
 	/**
-	 * x and y is from -1 to 1 to represent direction
+	 *
 	 */
-	public void launch(int x, int y){
-		if(currjumpdistance<jumpdistance){
-		setX(getX()+x);
-		setY(getY()+y);
-		currjumpdistance+=x;
+	public void launch(int x, int y, int midx, int midy){
+		//System.out.println("Jumping");
+		if(currjumpdistance<jumpdistance && distance(midx,midy)<jumprange){
+			if(getVelx()<0){
+				setVelx(getVelx()-.2);
+			}
+			else if(getVelx()>0){
+				setVelx(getVelx()+.2);
+			}
+			if(getVely()<0){
+				setVelx(getVelx()-.2);
+			}
+			else if(getVely()<0){
+				setVely(getVely()+.2);
+			}
+		currjumpdistance+=40;
 		}
 		else{
 			currjumpdistance=0;

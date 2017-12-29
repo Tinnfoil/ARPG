@@ -63,9 +63,18 @@ public class Object {
 		this.vely = vely;
 	}
 	
+	/**
+	 * @param x middle point of object
+	 * @param y middle point of object
+	 * @return
+	 */
+	public int distance(int x, int y){
+		return (int)Math.sqrt(Math.pow((getX()+getX()+getRect().getWidth())/2-x, 2)+Math.pow((getY()+getY()+getRect().getHeight())/2-y, 2));
+	}
+	
 	   public void move(double x, double y){
-	    	setX(getX()+(int)x);
-	    	setY(getY()+(int)y);
+	    	setX((getX()+(int)x));
+	    	setY((getY()+(int)y));
 	    }
 	    
 	    public boolean intersectsBlock(Block b){
@@ -78,32 +87,36 @@ public class Object {
 	    		Block b=list.get(i);
 	    		if(intersectsBlock(b)){
 	    			blist[i]=true;
-	    			double currvelx=getVelx();
-	    			double currvely=getVely();
-	    			if((b.getY()<=(int) getRect().getMaxY())){
-	    				//setVely(0);
-	    				currvely+=-getVely();
-	    			}
-	    			if(b.getX()<=(int) getRect().getMaxX()){
-	    				currvelx+=-getVelx();
-	    				//setVelx(0);
-	    			}
-	    			if((b.getMaxY())>=(int)getRect().getMinY()){
-	    				currvely+=getVely();
-	    				//setVely(0);
-	    			}
-	    			if((b.getMaxX())>=(int)getRect().getMinX()){
-	    				currvelx+=getVelx();
-	    				//setVelx(0);
-	    			}
-	    			setVelx(currvelx);
-	    			setVely(currvely);
+	    			fixVelocity(b);
 	    		}
 	    		else{
 	    			blist[i]=false;
 	    		}
 	    	}
 	    	return blist;
+	    }
+	    
+	    public void fixVelocity(Block b){
+			double currvelx=getVelx();
+			double currvely=getVely();
+			if((b.getY()<=(int) getRect().getMaxY())){
+				currvely+=-getVely();
+				//setVely(0);
+			}
+			if(b.getX()<=(int) getRect().getMaxX()){
+				currvelx+=-getVelx();
+				//setVelx(0);
+			}
+			if((b.getMaxY())>=(int)getRect().getMinY()){
+				currvely+=getVely();
+				//setVely(0);
+			}
+			if((b.getMaxX())>=(int)getRect().getMinX()){
+				currvelx+=getVelx();
+				//setVelx(0);
+			}
+			setVelx(currvelx);
+			setVely(currvely);
 	    }
 	    
 	    /**
@@ -133,10 +146,12 @@ public class Object {
 	        		int diff =(int)getRect().getMaxY()-b.getY();
 	        		move(0, -diff);
 	    		}
-	    		else if(getRect().getMaxY()-b.getY()>getRect().getX()-b.getMaxX()){
-	        		int diff =b.getMaxX()-(int)getRect().getMinX();
+	    		else if(getRect().getMaxY()-b.getY()>b.getMaxX()-getRect().getX()){
+	    			int diff =b.getMaxX()-(int)getRect().getMinX();
 	        		move(diff, 0);
 	    		}
+	    		
+
 	    	}
 	    	else if(b.getRect().contains(getRect().getMinX(), getRect().getMinY()))//top left
 	    	{
@@ -171,6 +186,15 @@ public class Object {
 	        		move(0, -diff);
 	    		}
 	    	}
-
+	    	
 	    }
+		
+		public double findAngle(int y, int x){
+			double angle =0;
+			angle=Math.toDegrees(Math.atan2(y,x));
+			if(y<0&&x<0){
+				angle+=360;
+			}
+			return angle;
+		}
 }
