@@ -23,6 +23,8 @@ public class Play extends JPanel implements Runnable
     int fps;
     int camxoff=600;
     int camyoff=400;
+    Time t=new Time();
+	int angle;
     
     private Thread thread;
     private boolean running=false;
@@ -197,7 +199,12 @@ public class Play extends JPanel implements Runnable
         	//g2d.rotate(Math.toRadians(45));
             //g2d.drawRect(s.getX(),s.getY(),s.getWidth(),s.getHeight());
             //g2d.rotate(-Math.toRadians(45));
-            g2d.drawRect(s.getX(),s.getY(),s.getWidth(),s.getHeight());
+        	g2d.drawRect(s.getX(),s.getY(),s.getWidth(),s.getHeight());
+        	if(s.getDashing()==true){
+        		g2d.setColor(Color.RED);
+        		g2d.drawRect(s.getX(),s.getY(),s.getWidth(),s.getHeight());
+        		g2d.setColor(Color.BLACK);
+        	}
             g.drawArc(100, 100, 30, 30, 0, 360);
             g.drawArc(100, 100, 10, 10, 0, 140);
             for(int i=0;i<5;i++){
@@ -229,7 +236,24 @@ public class Play extends JPanel implements Runnable
 
     
 	public void updateSquare(){
-		s.move((double)s.getVelx(),(double)s.getVely());
+		//int vx;
+		//int vy;
+		if(s.getDashing()==false){
+			t.time=0;
+			//vx= (int)s.getVelx();
+			//vy= (int)s.getVely();
+			s.move((double)s.getVelx(),(double)s.getVely());
+			angle=(int) s.findAngle((int)s.getVely(), (int)s.getVelx());
+		}
+		else if(s.getDashing()==true){
+			t.tick();
+			//s.move((double)s.getVelx(),(double)s.getVely());
+			s.setX(s.getX()+(int)(Math.cos(Math.toRadians(angle))*22));
+			s.setY(s.getY()+(int)(Math.sin(Math.toRadians(angle))*22));
+			if(t.getTimer()>=20){
+				s.setDashing(false);
+			}
+		}
 	}
 	
 	/**

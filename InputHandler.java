@@ -94,17 +94,24 @@ public class InputHandler {
 			}
     	}
     	if(multiKey.contains("SPACE")){
-    		t.startTimer();
-    		t.tick();
-    		if(t.getTimer()>60){
-    		if(Math.abs(xVel)<15){
-    			xVel*=2;
+    		//if(p.getSquare().getDashing()==false){
+    			p.getSquare().setDashing(true);
+    		//}
+    		/**
+    		Square s= p.getSquare();
+    		int angle=(int) s.findAngle((int)s.getVely(), (int)s.getVelx());
+    		if(s.getDashing()==true){
+    			//s.setVelx(0);
+    			//s.setVely(0);
+    			s.setX(s.getX()+(int)(Math.cos(Math.toRadians(angle))*10));
+    			s.setY(s.getY()+(int)(Math.sin(Math.toRadians(angle))*10));
+    			//s.setVelx(s.getVelx()+(int)(Math.cos(Math.toRadians(angle))*20));
+    			//s.setVely(s.getVely()+(int)(Math.sin(Math.toRadians(angle))*20));
     		}
-    		if(Math.abs(yVel)<15){
-    			yVel*=2;
+    		else{
+    			//nothing
     		}
-    		t.setTiming(false);
-    		}
+    		*/
     	}
     	p.getSquare().setVelx(xVel);
     	p.getSquare().setVely(yVel);

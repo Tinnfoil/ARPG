@@ -19,9 +19,9 @@ public class Time {
 	}
 	
 	public void tick(){
-		if(timing){
+
 			time++;
-		}
+
 	}
 	
 	public double getTimer(){

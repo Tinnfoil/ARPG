@@ -7,6 +7,7 @@ public class Square extends Object
 	
     private int width;
     private int height;
+    private boolean isDashing;
 
     /**
      * Constructor for objects of class Square
@@ -19,6 +20,7 @@ public class Square extends Object
         setY(70);
         Rectangle rect= new Rectangle(getX(),getY(),50,50);
         setRect(rect);
+        isDashing=false;
     }
     
     public int getWidth(){
@@ -28,6 +30,12 @@ public class Square extends Object
     	return height;
     }
 
+    public boolean getDashing(){
+    	return isDashing;
+    }
+    public void setDashing(boolean b){
+    	isDashing=b;
+    }
 
 
     
