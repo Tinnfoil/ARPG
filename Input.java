@@ -52,8 +52,8 @@ public class Input extends JPanel implements ActionListener, KeyListener, MouseL
     }
 
     /**
-     * Stops the Player from moving if they release they movement keys. 
-     * however, Player's facing direction will not change
+     * Events that happen when a key is released. In this case, when movement inputs are released,
+     * they are removed form the Inputhandler's multikey arraylist and therefore stopping the movement
      */
     public void keyReleased(KeyEvent e){
         int c=e.getKeyCode();
@@ -78,8 +78,10 @@ public class Input extends JPanel implements ActionListener, KeyListener, MouseL
         }
     }
 
+    /**
+     * Shoots a projectile when the mouse is clicked and toward the position of the mouse arrow
+     */
 	public void mouseClicked(MouseEvent e) {// projectile lifetime, multikey pressing, cooldowns
-		//System.out.println("X:"+m.getX()+" Y:"+m.getY());
 		int x1 = p.getSquare().getX() + p.getSquare().getWidth() / 2;
 		int y1 = p.getSquare().getY() + p.getSquare().getHeight() / 2;
 		int x2 = e.getX() + p.getSquare().getX() - p.camxoff;

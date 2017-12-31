@@ -7,7 +7,7 @@ public class Square extends Object
 	
     private int width;
     private int height;
-    private boolean isDashing;
+    private boolean isDashing;//Boolean to determine whether or not the player is dashing.
 
     /**
      * Constructor for objects of class Square

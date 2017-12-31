@@ -2,7 +2,12 @@ package ARPG;
 
 import java.awt.Rectangle;
 import java.util.ArrayList;
-
+/**
+ * The super class of all rectangular objects in the game
+ * Contains velocities and many helper methods
+ * Examples: Projectiles, AIs, and Player/Square
+ * @author Kenny
+ */
 public class Object {
 
     private int x;
@@ -64,6 +69,10 @@ public class Object {
 	}
 	
 	/**
+	 * returns the distance form this object's x and y to the specified x and y
+	 * *Example of use: to determine when Jumper(AI) should "jump" at the player
+	 * 					if(Jumper.distance(player.getx(),player.getY())<500) { *jump* }
+	 * 
 	 * @param x middle point of object
 	 * @param y middle point of object
 	 * @return
@@ -96,6 +105,11 @@ public class Object {
 	    	return blist;
 	    }
 	    
+	    /**
+	     * Stops the object's velocities in a dismension depending whether or not it is 
+	     * in the block.
+	     * @param b The block
+	     */
 	    public void fixVelocity(Block b){
 			double currvelx=getVelx();
 			double currvely=getVely();
@@ -120,7 +134,12 @@ public class Object {
 	    }
 	    
 	    /**
-	     * Adjusts the position of the square so that it doesn't go into the blocks
+	     * Adjusts the position of the object(Rectangle) so that it doesn't go into the blocks
+	     * Serves as the basic collision dectection and handling of the game
+	     * Uses corner-based detection for deciding the direction the object is pushed
+	     * example: Top-right corner is the block, if the corner is in the block it will compare
+	     * 			the the distance of the corner to all other sides of the blocks. The
+	     * 			shortest distance determines what side the block the object will be "Stuck" on 
 	     * @param b
 	     */
 		public void fixPosition(Block b){

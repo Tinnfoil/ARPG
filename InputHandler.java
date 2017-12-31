@@ -29,6 +29,12 @@ public class InputHandler {
     		multiKey.remove(input);
     	}
     }
+    
+    /**
+     * Interprets the current inputs mainly through the multikey arraylist. Certain strings in
+     * the arraylist will prompt different outcomes.
+     * @param p
+     */
     public void interpretInput(Play p){
     	double xVel = p.getSquare().getVelx();
     	double yVel = p.getSquare().getVely();
@@ -93,26 +99,11 @@ public class InputHandler {
 				yVel++;
 			}
     	}
+    	
     	if(multiKey.contains("SPACE")){
-    		//if(p.getSquare().getDashing()==false){
     			p.getSquare().setDashing(true);
-    		//}
-    		/**
-    		Square s= p.getSquare();
-    		int angle=(int) s.findAngle((int)s.getVely(), (int)s.getVelx());
-    		if(s.getDashing()==true){
-    			//s.setVelx(0);
-    			//s.setVely(0);
-    			s.setX(s.getX()+(int)(Math.cos(Math.toRadians(angle))*10));
-    			s.setY(s.getY()+(int)(Math.sin(Math.toRadians(angle))*10));
-    			//s.setVelx(s.getVelx()+(int)(Math.cos(Math.toRadians(angle))*20));
-    			//s.setVely(s.getVely()+(int)(Math.sin(Math.toRadians(angle))*20));
-    		}
-    		else{
-    			//nothing
-    		}
-    		*/
     	}
+    	
     	p.getSquare().setVelx(xVel);
     	p.getSquare().setVely(yVel);
 

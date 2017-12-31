@@ -21,10 +21,14 @@ public class Play extends JPanel implements Runnable
     ArrayList<Projectile> Projectiles = new ArrayList<Projectile>();
     
     int fps;
-    int camxoff=600;
+    int camxoff=600;//camera offsets to "Center" the camera
     int camyoff=400;
+    //for dashing
     Time t=new Time();
 	int angle;
+	//
+	
+	boolean dead=false;//temporary
     
     private Thread thread;
     private boolean running=false;
@@ -75,7 +79,7 @@ public class Play extends JPanel implements Runnable
     	
     }
     /**
-     * Game Loop, runs the game by 60 computations per second: Reduces needed processing
+     * Game Loop, runs the game by 60 computations/frames per second: Reduces needed processing
      * FPS is what we see
      */
     public void run(){
@@ -105,12 +109,14 @@ public class Play extends JPanel implements Runnable
     		while(unprocessedTime >= UPDATE){  
     			unprocessedTime-=UPDATE;
     			render=true;
-    			//update game
+    			//GAME UPDATE-------------------------------------------
     			
     			updateSquare();//moves square according to velocities
-    			cam.move(this);
-    			h.interpretInput(this);
-    			for(int i=0;i<blocks.size();i++){//Collision Checks
+    			cam.move(this);//moves the camera which follows the square/player
+    			h.interpretInput(this);// reads inputs of the user in order to do things
+    			
+    			//1.Collision Checks (Intersections)
+    			for(int i=0;i<blocks.size();i++){//Intersection between blocks and player
     				Block b= blocks.get(i);
     				int smidx=(s.getX()+(int)s.getRect().getMaxX())/2;
     				int smidy=(s.getY()+(int)s.getRect().getMaxY())/2;
@@ -121,12 +127,10 @@ public class Play extends JPanel implements Runnable
     					}
     				}
     			}
-    			for(int i=0;i<AIs.size();i++){
+    			for(int i=0;i<AIs.size();i++){//Intersection between AIs and blocks and projectiles
     				if(AIs.get(i).getClass()==Jumper.class){
-    						((Jumper)AIs.get(i)).tick(this);
-    					
-    					//((Jumper)AIs.get(i)).followSquare(s);
-    	    			for(int j=0;j<blocks.size();j++){//Collision Checks
+    					boolean isdead=false;
+    	    			for(int j=0;j<blocks.size();j++){
     	    				Block b= blocks.get(j);
     	    				int smidx=(AIs.get(i).getX()+(int)AIs.get(i).getRect().getMaxX())/2;
     	    				int smidy=(AIs.get(i).getY()+(int)AIs.get(i).getRect().getMaxY())/2;
@@ -137,25 +141,35 @@ public class Play extends JPanel implements Runnable
     	    				}
     	    			}
     	    			for(int j=0;j<Projectiles.size();j++){
-    	    			if(AIs.get(i).intersects(Projectiles.get(j).getRect())){
-    	    				AIs.remove(i);
-    	    				Projectiles.remove(j);
-    	    				i--;
-    	    			}
-    	    			}
-
-    				}
+    	    				if(AIs.get(i).intersects(Projectiles.get(j).getRect())){
+    	    					dead=true;
+    	    					Projectiles.remove(j);
+    	    				}
+    	    			}	
+	    				if(AIs.get(i).intersects(s.getRect())){
+	    					dead=true;//temp
+	    				}
+	    				((Jumper)AIs.get(i)).tick(this);
+	    			
+	    				if(isdead){
+	    					AIs.remove(i);
+	    				}
+	    			}
     			}
-    			for(int i=0;i<Projectiles.size();i++){//Collision Checks
+    			//---------------------------------------------------------------------
+    			
+    			//2.Status checking
+    			for(int i=0;i<Projectiles.size();i++){//Lifetime checking for player's projectiles
     				if(Projectiles.get(i).currentTime>=Projectiles.get(i).lifeTime){
     					Projectiles.remove(i);
-    					i--;
     				}
     				else{
     				Projectiles.get(i).tick();
     				}    			
     			}
-    			//
+    			//--------------------------------------------------------------------
+    			
+    			//--------------------------------------------------------------------
     			if(frameTime>=1.0){
     				//per second events
     				frameTime=0;
@@ -194,33 +208,40 @@ public class Play extends JPanel implements Runnable
         g.setColor(Color.BLACK);
         try{
         	g2d.translate(-cam.getX(), -cam.getY());//begins cam
-        	g.drawString("FPS: "+fps,(int)cam.getX()+5,(int)cam.getY()+20);
         	
-        	//g2d.rotate(Math.toRadians(45));
-            //g2d.drawRect(s.getX(),s.getY(),s.getWidth(),s.getHeight());
-            //g2d.rotate(-Math.toRadians(45));
+        	g.drawString("FPS: "+fps,(int)cam.getX()+5,(int)cam.getY()+20);//FPS Counter (Top-Right)
+        	
+        	//Player
         	g2d.drawRect(s.getX(),s.getY(),s.getWidth(),s.getHeight());
         	if(s.getDashing()==true){
         		g2d.setColor(Color.RED);
         		g2d.drawRect(s.getX(),s.getY(),s.getWidth(),s.getHeight());
         		g2d.setColor(Color.BLACK);
         	}
-            g.drawArc(100, 100, 30, 30, 0, 360);
-            g.drawArc(100, 100, 10, 10, 0, 140);
-            for(int i=0;i<5;i++){
+        	if(dead==true){
+        		g.drawString("DEAD",(int)s.getX()+5,(int)s.getY()+20);
+        	}
+        	//----------------------
+
+            for(int i=0;i<5;i++){//background grid. Non-interactable
             	for(int j=0;j<5;j++){
             		g.drawRect(-1000+(i*200),-1000+(j*200),200,200);
             	}
             }
+            //Blocks
             for(int i=0;i<blocks.size();i++){
             	Block b= blocks.get(i);
             	g.drawRect(b.getX(), b.getY(), b.getWidth(), b.getHeight());
             }
+            
+            //AIs
             for(int i=0;i<AIs.size();i++){
             	AI a= AIs.get(i);
             	g.drawRect((int)a.getX(), (int)a.getY(), (int)a.getSize(), (int)a.getSize());
 
             }
+            
+            //Projectiles
             for(int i=0;i<Projectiles.size();i++){
             	Projectile p=Projectiles.get(i);
             	g.drawRect((int)p.getRect().getX(),(int)p.getRect().getY(),(int)p.getRect().getWidth(),(int)p.getRect().getHeight());
@@ -234,20 +255,17 @@ public class Play extends JPanel implements Runnable
         
     }
 
-    
+    /**
+     * The movement "tick" of the player. Moves player according to the velocities
+     */
 	public void updateSquare(){
-		//int vx;
-		//int vy;
 		if(s.getDashing()==false){
 			t.time=0;
-			//vx= (int)s.getVelx();
-			//vy= (int)s.getVely();
 			s.move((double)s.getVelx(),(double)s.getVely());
 			angle=(int) s.findAngle((int)s.getVely(), (int)s.getVelx());
 		}
 		else if(s.getDashing()==true){
 			t.tick();
-			//s.move((double)s.getVelx(),(double)s.getVely());
 			s.setX(s.getX()+(int)(Math.cos(Math.toRadians(angle))*22));
 			s.setY(s.getY()+(int)(Math.sin(Math.toRadians(angle))*22));
 			if(t.getTimer()>=20){
@@ -257,6 +275,7 @@ public class Play extends JPanel implements Runnable
 	}
 	
 	/**
+	 * Spawns a projectile from coord. (x1,y1) that shoots to (x2,y2)
 	 * 
 	 * @param x1 spawn x coordinate of projectile
 	 * @param y1 spawn y coordinate of projectile
@@ -266,9 +285,6 @@ public class Play extends JPanel implements Runnable
 	public void spawnProjectile(int x1, int y1, int x2, int y2){
 		Projectile p= new Projectile(x1,y1,x2,y2);
 		Projectiles.add(p);
-		//Projectile d= new Projectile(x2,y2,x2,y2);
-		//Projectiles.add(d);
-
 	}
 	
     

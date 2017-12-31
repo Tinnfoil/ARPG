@@ -25,7 +25,7 @@ public class Time {
 	}
 	
 	public double getTimer(){
-		System.out.println(time);		
+		//System.out.println(time);		
 		return time;
 	}
 	

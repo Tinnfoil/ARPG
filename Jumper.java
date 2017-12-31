@@ -12,6 +12,7 @@ public class Jumper extends AI{
 	int jumpdistance;
 	int currjumpdistance;
 	Time t=new Time();
+	int angle;
 	int x;
 	int y;
 	double launchx; double launchy;
@@ -60,6 +61,8 @@ public class Jumper extends AI{
 		}
 		else if(jumping==false){
 			followPoint((int)(getX()+getX()+getRect().getWidth())/2,(int)(getY()+getY()+getRect().getHeight())/2,smidx,smidy);
+			angle=(int) findAngle(smidy-getY(), smidx-getX());
+			t.time=0;
 			x=smidx;
 			y=smidy;
 		}
@@ -124,10 +127,23 @@ public class Jumper extends AI{
 		}
 	}
 	
+	
 	/**
-	 *
+	 * The jump of the jumper. jump in 
 	 */
 	public void launch(int x, int y, int midx, int midy){
+			t.tick();
+			move((Math.cos(Math.toRadians(angle))*15),(Math.sin(Math.toRadians(angle))*15));
+			if(t.getTimer()>=20){
+				jumping=false;
+			}
+
+	}
+	
+	/**
+	 * The extremely inaccurate form of jumping. Seems to be closer to dashing in the general location
+	 */
+	public void launch2(int x, int y, int midx, int midy){
 		//System.out.println("Jumping");
 		if(currjumpdistance<jumpdistance && distance(midx,midy)<jumprange){
 			if(getVelx()<0){
