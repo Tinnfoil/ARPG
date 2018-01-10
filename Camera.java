@@ -18,8 +18,8 @@ public class Camera {
 	}
 	
 	public void move(Play p){
-		currx = p.getSquare().getX() - xoffset;
-		curry=p.getSquare().getY() - yoffset;
+		currx = p.getSquare().getX() - xoffset ;
+		curry=  p.getSquare().getY() - yoffset ;
 		if(Math.abs(currx-lastx)>1){
 			lastx=(((currx+lastx)/2)+lastx)/2;
 			//lastx=(currx+lastx)/2;// 2 times as fast as the current camera ^

@@ -17,14 +17,13 @@ public class Jumper extends AI{
 	int y;
 	double launchx; double launchy;
 	boolean jumping;
-	boolean charged;
 	public Jumper(int x, int y, int size, double vel){
 		super(x,y,size);
 		setX(x);
 		setY(y);
 		setVelx(vel);
 		setVely(vel);
-		jumprange=200;//pixels
+		jumprange=300;//pixels
 		jumping =false;
 		jumpdistance=300;
 		currjumpdistance=0;
@@ -133,7 +132,9 @@ public class Jumper extends AI{
 	 */
 	public void launch(int x, int y, int midx, int midy){
 			t.tick();
-			move((Math.cos(Math.toRadians(angle))*15),(Math.sin(Math.toRadians(angle))*15));
+
+			move((Math.cos(Math.toRadians(angle))*10),(Math.sin(Math.toRadians(angle))*10));
+
 			if(t.getTimer()>=20){
 				jumping=false;
 			}

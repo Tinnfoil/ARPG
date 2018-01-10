@@ -80,26 +80,31 @@ public class Input extends JPanel implements ActionListener, KeyListener, MouseL
 
     /**
      * Shoots a projectile when the mouse is clicked and toward the position of the mouse arrow
+     * *TO BE FIXED, some clicks dont get registered
      */
 	public void mouseClicked(MouseEvent e) {// projectile lifetime, multikey pressing, cooldowns
-		int x1 = p.getSquare().getX() + p.getSquare().getWidth() / 2;
-		int y1 = p.getSquare().getY() + p.getSquare().getHeight() / 2;
-		int x2 = e.getX() + p.getSquare().getX() - p.camxoff;
-		int y2 = e.getY() + p.getSquare().getY() - p.camyoff;
-		p.getHandler().addInput(x1+"+"+y1+"+"+x2+"+"+y2);
-		p.spawnProjectile(x1,y1,x2,y2);
+		// TODO FIX PROJECTILE REGISTERING
+		if(p.getHandler().spawning==false){
+			int x1 = p.getSquare().getX() + p.getSquare().getWidth() / 2;
+			int y1 = p.getSquare().getY() + p.getSquare().getHeight() / 2;
+			int x2 = e.getX() + p.getSquare().getX() - p.camxoff;
+			int y2 = e.getY() + p.getSquare().getY() - p.camyoff;
+			p.getHandler().setMouseCoords(x1, y1, x2, y2);
+			p.getHandler().spawning=true;
+			p.getHandler().addInput("CLICKED");
+		}
 		
 	}
 
 	@Override
 	public void mouseEntered(MouseEvent e) {
-		// TODO Auto-generated method stub
+		
 		
 	}
 
 	@Override
 	public void mouseExited(MouseEvent e) {
-		// TODO Auto-generated method stub
+		
 		
 	}
 
@@ -111,8 +116,7 @@ public class Input extends JPanel implements ActionListener, KeyListener, MouseL
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
+
 	}
 
 }

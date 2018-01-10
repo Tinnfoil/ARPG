@@ -16,8 +16,8 @@ public class Square extends Object
     {
     	width=50;
     	height=50;
-        setX(70);
-        setY(70);
+        setX(500);//4150
+        setY(500);
         Rectangle rect= new Rectangle(getX(),getY(),50,50);
         setRect(rect);
         isDashing=false;

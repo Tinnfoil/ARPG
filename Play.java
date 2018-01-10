@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.util.ArrayList;
+import java.util.Random;
 
 import javax.swing.JPanel;
 
@@ -21,6 +22,7 @@ public class Play extends JPanel implements Runnable
     ArrayList<Projectile> Projectiles = new ArrayList<Projectile>();
     
     int fps;
+    int totaltime=0;
     int camxoff=600;//camera offsets to "Center" the camera
     int camyoff=400;
     //for dashing
@@ -36,24 +38,34 @@ public class Play extends JPanel implements Runnable
     final double UPDATE=1.0/60.0;
     
     public Play(){
-    	bm.map1();
+    	bm.map3();
     	bm.addBlocks(blocks);
-    	Block f= new Block(-1100,-1000,100,1000);
-    	Block g= new Block(-1000,-1100,1000,100);
-    	//Block h= new Block(-1000,0,1000,100);
-    	//Block k= new Block(0,-1000,100,1000);
+    	Block f= new Block(-100,-0,100,1000);
+    	Block l= new Block(-100,1000,100,1000);
+    	Block g= new Block(0,-100,1000,100);
+    	Block o= new Block(1000,-100,1000,100);
+    	Block h= new Block(2000,1000,100,1000);
+    	Block n= new Block(2000,0,100,1000);
+    	Block k= new Block(1000,2000,1000,100);
+    	Block v= new Block(0,2000,1000,100);
     	blocks.add(f);
+    	blocks.add(l);
     	blocks.add(g);
-    	//blocks.add(h);
-    	//blocks.add(k);
-    	Jumper j= new Jumper(-300,-300,30,2);
-    	Jumper a= new Jumper(-200,-400,30,2);
-    	Jumper b= new Jumper(-400,-300,30,2);
-    	Jumper c= new Jumper(-500,-300,30,2);
-    	AIs.add(j);
-    	AIs.add(a);
-    	AIs.add(b);
-    	AIs.add(c);
+    	blocks.add(o);
+    	blocks.add(h);
+    	blocks.add(n);
+    	blocks.add(k);
+    	blocks.add(v);
+    	bm.CreateMap(10,10);
+    	bm.printMap(bm.map);
+    	//Jumper j= new Jumper(-300,-300,30,2);
+    	//Jumper a= new Jumper(-200,-400,30,2);
+    	//Jumper b= new Jumper(-400,-300,30,2);
+    	//Jumper c= new Jumper(-500,-300,30,2);
+    	//AIs.add(j);
+    	//AIs.add(a);
+    	//AIs.add(b);
+    	//AIs.add(c);
     }
     
     public Square getSquare(){
@@ -83,7 +95,7 @@ public class Play extends JPanel implements Runnable
      * FPS is what we see
      */
     public void run(){
-    	
+    	Random RN= new Random();
     	boolean render=false;
     	running=true;
     	
@@ -142,7 +154,7 @@ public class Play extends JPanel implements Runnable
     	    			}
     	    			for(int j=0;j<Projectiles.size();j++){
     	    				if(AIs.get(i).intersects(Projectiles.get(j).getRect())){
-    	    					dead=true;
+    	    					isdead=true;
     	    					Projectiles.remove(j);
     	    				}
     	    			}	
@@ -175,6 +187,13 @@ public class Play extends JPanel implements Runnable
     				frameTime=0;
     				fps=frames;
     				frames=0;
+    				if(!dead){
+    				totaltime++;
+    					if(totaltime%2==0){
+    						Jumper j= new Jumper(RN.nextInt(2000),RN.nextInt(2000),30,2);	
+    						AIs.add(j);
+    					}
+    				}
     			}
     		}
     		if(render)
@@ -207,31 +226,49 @@ public class Play extends JPanel implements Runnable
         Graphics2D g2d= (Graphics2D)g; 
         g.setColor(Color.BLACK);
         try{
+        	//g2d.rotate(40,camxoff,camyoff);
         	g2d.translate(-cam.getX(), -cam.getY());//begins cam
-        	
         	g.drawString("FPS: "+fps,(int)cam.getX()+5,(int)cam.getY()+20);//FPS Counter (Top-Right)
-        	
+        	g.drawString("Time: "+totaltime,(int)cam.getX()+50,(int)cam.getY()+20);
         	//Player
-        	g2d.drawRect(s.getX(),s.getY(),s.getWidth(),s.getHeight());
+        	g2d.fillRect(s.getX(),s.getY(),s.getWidth(),s.getHeight());
         	if(s.getDashing()==true){
         		g2d.setColor(Color.RED);
-        		g2d.drawRect(s.getX(),s.getY(),s.getWidth(),s.getHeight());
+        		g2d.fillRect(s.getX(),s.getY(),s.getWidth(),s.getHeight());
         		g2d.setColor(Color.BLACK);
         	}
         	if(dead==true){
+        		g2d.setColor(Color.RED);
         		g.drawString("DEAD",(int)s.getX()+5,(int)s.getY()+20);
+        		g2d.setColor(Color.BLACK);
         	}
         	//----------------------
 
-            for(int i=0;i<5;i++){//background grid. Non-interactable
-            	for(int j=0;j<5;j++){
-            		g.drawRect(-1000+(i*200),-1000+(j*200),200,200);
+            for(int i=0;i<10;i++){//background grid. Non-interactable
+            	for(int j=0;j<10;j++){
+            		g.drawRect((i*200),(j*200),200,200);
             	}
             }
             //Blocks
+            int xoff=10;
+            int yoff=-70;
             for(int i=0;i<blocks.size();i++){
             	Block b= blocks.get(i);
             	g.drawRect(b.getX(), b.getY(), b.getWidth(), b.getHeight());
+            }
+            for(int i=0;i<blocks.size();i++){
+            	Block b= blocks.get(i);
+            	g.drawLine(b.getX(), b.getY(), b.getX()+xoff, b.getY()+yoff);
+            	g.drawLine(b.getX()+b.getWidth(), b.getY(), b.getX()+b.getWidth()+xoff, b.getY()+yoff);
+            	g.drawLine(b.getX(), b.getY()+b.getHeight(), b.getX()+xoff, b.getY()+b.getHeight()+yoff);
+            	g.drawLine(b.getX()+b.getWidth(), b.getY()+b.getHeight(), b.getX()+b.getWidth()+xoff, b.getY()+b.getHeight()+yoff);
+            }
+            for(int i=0;i<blocks.size();i++){
+            	Block b= blocks.get(i);
+            	g2d.setColor(Color.GREEN);
+            	g.fillRect(b.getX()+xoff, b.getY()+yoff, b.getWidth(), b.getHeight());
+            	g2d.setColor(Color.BLACK);
+            	g.drawRect(b.getX()+xoff, b.getY()+yoff, b.getWidth(), b.getHeight());
             }
             
             //AIs
@@ -246,9 +283,8 @@ public class Play extends JPanel implements Runnable
             	Projectile p=Projectiles.get(i);
             	g.drawRect((int)p.getRect().getX(),(int)p.getRect().getY(),(int)p.getRect().getWidth(),(int)p.getRect().getHeight());
             }
-            
             g2d.translate(cam.getX(), cam.getY());//end of cam
-            
+            //g2d.rotate(-30,0,0);
         }
         catch(Exception e){
         }
@@ -266,8 +302,8 @@ public class Play extends JPanel implements Runnable
 		}
 		else if(s.getDashing()==true){
 			t.tick();
-			s.setX(s.getX()+(int)(Math.cos(Math.toRadians(angle))*22));
-			s.setY(s.getY()+(int)(Math.sin(Math.toRadians(angle))*22));
+			s.setX(s.getX()+(int)(Math.cos(Math.toRadians(angle))*17));
+			s.setY(s.getY()+(int)(Math.sin(Math.toRadians(angle))*17));
 			if(t.getTimer()>=20){
 				s.setDashing(false);
 			}
@@ -282,9 +318,11 @@ public class Play extends JPanel implements Runnable
 	 * @param x2 target x coordinate of projectile
 	 * @param y2 target y coordinate of projectile
 	 */
-	public void spawnProjectile(int x1, int y1, int x2, int y2){
+	public boolean spawnProjectile(int x1, int y1, int x2, int y2){
 		Projectile p= new Projectile(x1,y1,x2,y2);
+		System.out.println("Spawned");
 		Projectiles.add(p);
+		return true;
 	}
 	
     

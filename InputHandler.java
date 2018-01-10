@@ -6,12 +6,15 @@ public class InputHandler {
 	
 	Play p;
 	private ArrayList<String> multiKey;
+	private int[] mousecoords= new int[4];
+	boolean spawning=false;
 	Time t= new Time();
 	
 	public InputHandler(Play p){
 		multiKey = new ArrayList<String>();
 		this.p=p;
 	}
+	
     public void readList(){
         for(int i=0; i <multiKey.size(); i++) //
         {
@@ -30,9 +33,17 @@ public class InputHandler {
     	}
     }
     
+    public void setMouseCoords(int x1, int y1, int x2, int y2){
+    	mousecoords[0]=x1;
+    	mousecoords[1]=y1;
+    	mousecoords[2]=x2;
+    	mousecoords[3]=y2;
+    }
+    
     /**
      * Interprets the current inputs mainly through the multikey arraylist. Certain strings in
      * the arraylist will prompt different outcomes.
+     * Acceleration based movement. Pressing the key will increase speed.
      * @param p
      */
     public void interpretInput(Play p){
@@ -107,6 +118,14 @@ public class InputHandler {
     	p.getSquare().setVelx(xVel);
     	p.getSquare().setVely(yVel);
 
+    	if(multiKey.contains("CLICKED")){
+    		if(spawning==true&&p.spawnProjectile(mousecoords[0],mousecoords[1],mousecoords[2],mousecoords[3])==true){
+    			spawning=false;
+        		removeInput("CLICKED");
+    		}
+    	}
     	
     }
+    
+
 }
