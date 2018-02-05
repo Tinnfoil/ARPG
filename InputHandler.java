@@ -8,10 +8,13 @@ public class InputHandler {
 	private ArrayList<String> multiKey;
 	private int[] mousecoords= new int[4];
 	boolean spawning=false;
+	boolean attacking;
+	int attackdelay=0;
 	Time t= new Time();
 	
 	public InputHandler(Play p){
 		multiKey = new ArrayList<String>();
+		 attacking=false;
 		this.p=p;
 	}
 	
@@ -49,29 +52,30 @@ public class InputHandler {
     public void interpretInput(Play p){
     	double xVel = p.getSquare().getVelx();
     	double yVel = p.getSquare().getVely();
+    	
     	if(multiKey.contains("UP")){
-    		if(yVel>-10)
-    		yVel += -.7;
+    		if(yVel>-p.getSquare().getMaxspeed())
+    		yVel += -p.getSquare().getAcceleration();
     		if(yVel>0)
-    		yVel += -4;
+    		yVel += -3;
     	}
     	if(multiKey.contains("DOWN")){
-    		if(yVel<10)
-    		yVel += .7;
+    		if(yVel<p.getSquare().getMaxspeed())
+    		yVel += p.getSquare().getAcceleration();;
     		if(yVel<0)
-    		yVel += 4;
+    		yVel += 3;
     	}
     	if(multiKey.contains("RIGHT")){
-    		if(xVel<10)
-    		xVel += .7;
+    		if(xVel<p.getSquare().getMaxspeed())
+    		xVel += p.getSquare().getAcceleration();;
     		if(xVel<0)
-    		xVel += 4;
+    		xVel += 3;
     	}	
     	if(multiKey.contains("LEFT")){
-    		if(xVel>-10)
-    		xVel += -.7;
+    		if(xVel>-p.getSquare().getMaxspeed())
+    		xVel += -p.getSquare().getAcceleration();;
     		if(xVel>0)
-    		xVel += -4;
+    		xVel += -3;
     	}
     	if(multiKey.contains("LEFT") && multiKey.contains("RIGHT")){
     		xVel = 0;
@@ -112,16 +116,34 @@ public class InputHandler {
     	}
     	
     	if(multiKey.contains("SPACE")){
-    			p.getSquare().setDashing(true);
+    		p.getSquare().setDashing(true);
     	}
     	
     	p.getSquare().setVelx(xVel);
     	p.getSquare().setVely(yVel);
 
     	if(multiKey.contains("CLICKED")){
-    		if(spawning==true&&p.spawnProjectile(mousecoords[0],mousecoords[1],mousecoords[2],mousecoords[3])==true){
+    		if(spawning==true){
+    			p.spawnProjectile(mousecoords[0],mousecoords[1],mousecoords[2],mousecoords[3]);
     			spawning=false;
-        		removeInput("CLICKED");
+    		}
+    	}
+    	
+    	if(multiKey.contains("ATTACK")){
+    		if(attacking==true){
+    			double angle=p.getSquare().findAngle(mousecoords[1]-mousecoords[3],mousecoords[0]-mousecoords[2]);
+    			if(attackdelay>0){
+    				p.getSquare().setInvunerable(true);
+    				p.getSquare().move((Math.cos(Math.toRadians(angle+180))*10),(Math.sin(Math.toRadians(angle+180))*10));
+    			}
+    			if(attackdelay<=0){
+    				p.getSquare().setInvunerable(false);
+    				p.delayedAttack(angle,4);
+    				attacking =false;
+    			}
+    			else{
+    				attackdelay--;	
+    			}
     		}
     	}
     	

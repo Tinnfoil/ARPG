@@ -1,5 +1,6 @@
 package ARPG;
 
+import java.awt.Point;
 import java.awt.Rectangle;
 
 /**
@@ -10,26 +11,29 @@ public class Jumper extends AI{
 
 	int jumprange;
 	int jumpdistance;
-	int currjumpdistance;
-	Time t=new Time();
+	Time jumptime=new Time();
+	Time chargetime=new Time();
+	int chargewaittime;
 	int angle;
-	int x;
-	int y;
-	double launchx; double launchy;
+	int size;
+	double vel;
 	boolean jumping;
 	public Jumper(int x, int y, int size, double vel){
-		super(x,y,size);
-		setX(x);
-		setY(y);
-		setVelx(vel);
-		setVely(vel);
-		jumprange=300;//pixels
-		jumping =false;
-		jumpdistance=300;
-		currjumpdistance=0;
+		super(x,y,size,vel);
+		this.size=size;
+		this.vel=vel;
+		setHealth(100);
+		setMaxhealth(100);
 		Rectangle Rect= new Rectangle(getX(),getY(),size,size);
 		setRect(Rect);
-		setSize(size);
+		jumprange=200;//pixels
+		jumping =false;
+		jumpdistance=300;
+		chargewaittime=35;
+	}
+	
+	public int getChargetime(){
+		return (int)chargetime.getTimer();
 	}
 	
 	/**
@@ -42,108 +46,61 @@ public class Jumper extends AI{
 	 * 4.Repeat
 	 * @param p
 	 */
-	public void tick(Play p){//thinking method
-		
-		move((double)getVelx(),(double)getVely());
+	public void tick(Play p){//thinking methodd
+		super.tick();
 		int smidx=(p.getSquare().getX()+(int)p.getSquare().getRect().getMaxX())/2;
 		int smidy=(p.getSquare().getY()+(int)p.getSquare().getRect().getMaxY())/2;
+		int midx=(int)(getX()+getX()+getRect().getWidth())/2;
+		int midy=(int)(getY()+getY()+getRect().getHeight())/2;
 		
-		if(jumping==false&&Math.sqrt(Math.pow((getX()+getX()+getRect().getWidth())/2-smidx, 2)+Math.pow((getY()+getY()+getRect().getHeight())/2-smidy, 2))<jumprange){
-			//System.out.println("SetTrue");
-			if(Math.abs(getVelx())<2){
-			setVely(getVelx()*2);
+		if(distance(midx,midy,smidx,smidy)<p.bm.scale*16){
+		move((double)getVelx(),(double)getVely());
+		if(jumping==true){//Jumps at player after given charging time.
+			chargetime.tick();
+			if(chargetime.getTimer()>chargewaittime){//The actual jump
+				launch(getX(),getY(),smidx,smidy);
+				Point a= p.bm.getMapPos(getX(), getY());
+				nextnode=new Node((int)a.getX(),(int)a.getY(),(int)a.getX(),(int)a.getY());
 			}
-			if(Math.abs(getVely())<2){
-			setVely(getVely()*2);
+			else{
+				if(chargetime.getTimer()<chargewaittime-15){//The charge up period
+					angle=(int) findAngle((smidy-getY())+(int)p.s.getVely()*20, smidx-getX()+(int)p.s.getVelx()*20);
+				}
+				setVelx(0);
+				setVely(0);
 			}
+		}
+		else if(path(smidx,smidy,jumprange,p)==true){// Path to player if player is further than the distance provide Jumprange(200)
+			chargetime.time=0;
+			jumping=false;
+		}
+		else if(jumping==false&&distance(smidx, smidy)<jumprange){//prepares to jump
+			chargetime.time=0;
 			jumping=true;
 		}
-		else if(jumping==false){
-			followPoint((int)(getX()+getX()+getRect().getWidth())/2,(int)(getY()+getY()+getRect().getHeight())/2,smidx,smidy);
-			angle=(int) findAngle(smidy-getY(), smidx-getX());
-			t.time=0;
-			x=smidx;
-			y=smidy;
-		}
-		else if(jumping==true){
-			launch(x,y,smidx,smidy);
+		else if(jumping==false){//If player is between jumprange and pathrange, simply follows player
+			followPoint(midx,midy,smidx,smidy);
+			//angle=(int) findAngle((smidy-getY())+(int)p.s.getVely()*10, smidx-getX()+(int)p.s.getVelx()*10);
+			jumptime.time=0;
 		}
 
-	}
-	
-	/**
-	 * copy of collision system of square
-	 * @param p
-	 */
-	public void collides(Play p){
-		for(int i=0;i<p.getBlocks().size();i++){//Collision Checks
-			Block b= p.getBlocks().get(i);
-			int bmidx=(b.getX()+b.getMaxX())/2;
-			int bmidy=(b.getY()+b.getMaxY())/2;
-			if(distance(bmidx,bmidy)<200){
-				if(intersectsBlocks(p.getBlocks())[i]){
-					fixPosition(p.getBlocks().get(i));
-				}
-			}
 		}
 	}
-	
-	/**
-	 * changes objects' velocities(acceleration based) 
-	 * so it can follow the specified point(Does not move object)
-	 * @param x object's x coordinate
-	 * @param y object's y coordinate
-	 * @param midx point's x coordinate
-	 * @param midy point's y coordinate
-	 */
-	public void followPoint(int x, int y, int midx, int midy){
-		if(Math.abs(x-midx)<=getVelx()){
-			setVelx(0);
-		}
-		else if((x>midx)&&Math.abs(x-midx)>getVelx()){
-			if(getVelx()>-4){
-				setVelx(getVelx()-.2);
-				}
-		}
-		else if((x<midx)&&Math.abs(x-midx)>getVelx()){
-			if(getVelx()<4){
-				setVelx(getVelx()+.2);
-			}
-		}
-
-		if(Math.abs(y-midy)<=getVely()){
-			setVely(0);
-		}
-		else if((y>midy)&&Math.abs(y-midy)>getVely()){
-			if(getVely()>-4){
-			setVely(getVely()-.2);
-			}
-		}
-		else if((y<midy)&&Math.abs(y-midy)>getVely()){
-			if(getVely()<4){
-				setVely(getVely()+.2);
-			}
-		}
-	}
-	
 	
 	/**
 	 * The jump of the jumper. jump in 
 	 */
 	public void launch(int x, int y, int midx, int midy){
-			t.tick();
-
+			jumptime.tick();
 			move((Math.cos(Math.toRadians(angle))*10),(Math.sin(Math.toRadians(angle))*10));
-
-			if(t.getTimer()>=20){
+			if(jumptime.getTimer()>=30){
 				jumping=false;
+				jumptime.time=0;
 			}
-
 	}
 	
 	/**
 	 * The extremely inaccurate form of jumping. Seems to be closer to dashing in the general location
-	 */
 	public void launch2(int x, int y, int midx, int midy){
 		//System.out.println("Jumping");
 		if(currjumpdistance<jumpdistance && distance(midx,midy)<jumprange){
@@ -167,5 +124,8 @@ public class Jumper extends AI{
 		}
 
 	}
+	*/
+	
+
 
 }

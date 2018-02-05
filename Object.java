@@ -2,6 +2,7 @@ package ARPG;
 
 import java.awt.Rectangle;
 import java.util.ArrayList;
+import java.util.Random;
 /**
  * The super class of all rectangular objects in the game
  * Contains velocities and many helper methods
@@ -14,7 +15,13 @@ public class Object {
     private int y;
     private double velx;
     private double vely;
+    private double maxspeed;
+    private double acceleration;
+    private int stunframes;
+    private boolean invunerable;
+    private int invunerableframes;
     Rectangle rect;
+    
     public Object(){
     	x=0;
     	y=0;
@@ -43,6 +50,10 @@ public class Object {
     	rect.translate(x-this.x,0);
     	this.x=x;
     }
+	
+	public int getMidx(){
+		return x+(int)(getRect().getWidth()/2);
+	}
     
     public int getY(){
     	return y;
@@ -51,6 +62,10 @@ public class Object {
     	rect.translate(0,y-this.y);
     	this.y=y;
     }
+    
+	public int getMidy(){
+		return y+(int)(getRect().getHeight()/2);
+	}
 
 	public double getVelx() {
 		return velx;
@@ -67,6 +82,24 @@ public class Object {
 	public void setVely(double vely) {
 		this.vely = vely;
 	}
+    public void stop(){
+    	setVelx(0);
+    	setVely(0);
+    }
+    public void friction(){
+    	if(getVelx()>getMaxspeed()){
+    		setVelx(getVelx()-.2);
+    	}
+    	else if(getVelx()<-getMaxspeed()){
+    		setVelx(getVelx()+.2);
+    	}
+    	if(getVely()>getMaxspeed()){
+    		setVely(getVely()-.2);
+    	}
+    	else if(getVely()<-getMaxspeed()){
+    		setVely(getVely()+.2);
+    	}
+    }
 	
 	/**
 	 * returns the distance form this object's x and y to the specified x and y
@@ -79,6 +112,10 @@ public class Object {
 	 */
 	public int distance(int x, int y){
 		return (int)Math.sqrt(Math.pow((getX()+getX()+getRect().getWidth())/2-x, 2)+Math.pow((getY()+getY()+getRect().getHeight())/2-y, 2));
+	}
+	
+	public int distance(int x1, int y1, int x2, int y2){
+		return (int)Math.sqrt(Math.pow(x2-x1, 2)+Math.pow(y2-y1, 2));
 	}
 	
 	   public void move(double x, double y){
@@ -208,6 +245,24 @@ public class Object {
 	    	
 	    }
 		
+		/**
+		 * 
+		 * @param o1 Object to be "Knocked away" from the point
+		 * @param x x coord of the point
+		 * @param y y coord of the point
+		 * @param power the "Strength of the knockback"
+		 */
+		public void knockback(Object o1, int x, int y, int power){
+			double angle=o1.findAngle(o1.getY()+(int)o1.getRect().getHeight()/2-y, o1.getX()+(int)o1.getRect().getWidth()/2-x);
+			o1.accelerate(angle,power);
+		}
+		
+		public void accelerate(double angle, double a){
+			double angle1= Math.toRadians(angle);
+			setVelx(getVelx()+(Math.cos(angle1)*a*10));
+			setVely(getVely()+(Math.sin(angle1)*a*10));
+		}
+		
 		public double findAngle(int y, int x){
 			double angle =0;
 			angle=Math.toDegrees(Math.atan2(y,x));
@@ -216,4 +271,50 @@ public class Object {
 			}
 			return angle;
 		}
+		
+		public int random(int num){
+			Random RN= new Random();
+			return RN.nextInt()+1;
+		}
+
+		public double getMaxspeed() {
+			return maxspeed;
+		}
+
+		public void setMaxspeed(double maxspeed) {
+			this.maxspeed = maxspeed;
+		}
+
+		public double getAcceleration() {
+			return acceleration;
+		}
+
+		public void setAcceleration(double d) {
+			this.acceleration = d;
+		}
+
+		public boolean isInvunerable() {
+			return invunerable;
+		}
+
+		public void setInvunerable(boolean invunerable) {
+			this.invunerable = invunerable;
+		}
+
+		public int getInvunerableframes() {
+			return invunerableframes;
+		}
+
+		public void setInvunerableframes(int invunerableframes) {
+			this.invunerableframes = invunerableframes;
+		}
+
+		public int getStunframes() {
+			return stunframes;
+		}
+
+		public void setStunframes(int stunframes) {
+			this.stunframes = stunframes;
+		}
+
 }
