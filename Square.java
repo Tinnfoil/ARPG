@@ -45,7 +45,7 @@ public class Square extends Object
         setRect(rect);
         setSkillpoints(0);
         fireupgrade=false;
-        canfreeze=true; setFreezeframes(0); setCurrfreezecooldown(0); setFreezecooldown(600);
+        canfreeze=false; setFreezeframes(0); setCurrfreezecooldown(0); setFreezecooldown(600);
         phasewalkupgrade=false; setCurrphasewalkcooldown(0); setPhasewalkcooldown(300);
         
         setMaxspeed(4);
