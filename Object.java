@@ -17,9 +17,17 @@ public class Object {
     private double vely;
     private double maxspeed;
     private double acceleration;
+    
+    private int speedboost;
+    private int speedboostframes;
+    private int speedboostduration;
     private int stunframes;
+    private int delayedstunframes;
+    private int stunduration;
     private boolean invunerable;
     private int invunerableframes;
+    private int dotframes;
+    private int dotdamage;
     Rectangle rect;
     
     public Object(){
@@ -28,6 +36,7 @@ public class Object {
     	velx=0;
     	vely=0;
     	rect= new Rectangle(0,0,0,0);
+    	setDotdamage(0);
     }
     
     public Rectangle getRect(){
@@ -66,6 +75,11 @@ public class Object {
 	public int getMidy(){
 		return y+(int)(getRect().getHeight()/2);
 	}
+	
+	public void setLocation(int x, int y){
+		setX(x);
+		setY(y);
+	}
 
 	public double getVelx() {
 		return velx;
@@ -88,16 +102,16 @@ public class Object {
     }
     public void friction(){
     	if(getVelx()>getMaxspeed()){
-    		setVelx(getVelx()-.2);
+    		setVelx(getVelx()-.4);
     	}
     	else if(getVelx()<-getMaxspeed()){
-    		setVelx(getVelx()+.2);
+    		setVelx(getVelx()+.4);
     	}
     	if(getVely()>getMaxspeed()){
-    		setVely(getVely()-.2);
+    		setVely(getVely()-.4);
     	}
     	else if(getVely()<-getMaxspeed()){
-    		setVely(getVely()+.2);
+    		setVely(getVely()+.4);
     	}
     }
 	
@@ -119,6 +133,18 @@ public class Object {
 	}
 	
 	   public void move(double x, double y){
+		   if(x>0){
+			   x=x+getSpeedboost();
+		   }
+		   else{
+			   x=x-getSpeedboost();
+		   }
+		   if(y>0){
+			 y=y+getSpeedboost();  
+		   }
+		   else{
+			 y=y-getSpeedboost();
+		   }
 	    	setX((getX()+(int)x));
 	    	setY((getY()+(int)y));
 	    }
@@ -252,7 +278,7 @@ public class Object {
 		 * @param y y coord of the point
 		 * @param power the "Strength of the knockback"
 		 */
-		public void knockback(Object o1, int x, int y, int power){
+		public void knockback(Object o1, int x, int y, double power){
 			double angle=o1.findAngle(o1.getY()+(int)o1.getRect().getHeight()/2-y, o1.getX()+(int)o1.getRect().getWidth()/2-x);
 			o1.accelerate(angle,power);
 		}
@@ -263,6 +289,11 @@ public class Object {
 			setVely(getVely()+(Math.sin(angle1)*a*10));
 		}
 		
+		public void boostSpeed(int speed, int duration){
+			setSpeedboost(speed);
+			setSpeedboostframes(duration);
+		}
+		
 		public double findAngle(int y, int x){
 			double angle =0;
 			angle=Math.toDegrees(Math.atan2(y,x));
@@ -270,6 +301,10 @@ public class Object {
 				angle+=360;
 			}
 			return angle;
+		}
+		
+		public boolean intersects(Circle c){
+			return c.intersects(this);
 		}
 		
 		public int random(int num){
@@ -316,5 +351,62 @@ public class Object {
 		public void setStunframes(int stunframes) {
 			this.stunframes = stunframes;
 		}
+
+		public int getDelayedstunframes() {
+			return delayedstunframes;
+		}
+
+		public void setDelayedstunframes(int delayedstunframes) {
+			this.delayedstunframes = delayedstunframes;
+		}
+
+		public int getStunduration() {
+			return stunduration;
+		}
+
+		public void setStunduration(int stunduration) {
+			this.stunduration = stunduration;
+		}
+
+		public int getSpeedboost() {
+			return speedboost;
+		}
+
+		public void setSpeedboost(int speedboost) {
+			this.speedboost = speedboost;
+		}
+
+		public int getSpeedboostframes() {
+			return speedboostframes;
+		}
+
+		public void setSpeedboostframes(int speedboostframes) {
+			this.speedboostframes = speedboostframes;
+		}
+
+		public int getSpeedboostduration() {
+			return speedboostduration;
+		}
+
+		public void setSpeedboostduration(int speedboostduration) {
+			this.speedboostduration = speedboostduration;
+		}
+
+		public int getDotframes() {
+			return dotframes;
+		}
+
+		public void setDotframes(int dotframes) {
+			this.dotframes = dotframes;
+		}
+
+		public int getDotdamage() {
+			return dotdamage;
+		}
+
+		public void setDotdamage(int dotdamage) {
+			this.dotdamage = dotdamage;
+		}
+
 
 }

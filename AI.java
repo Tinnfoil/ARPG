@@ -6,7 +6,6 @@ import java.awt.Rectangle;
 public class AI extends Object{
 
 	int size;
-	double vel;
     private int health;
     private int maxhealth;
 	Node lastnode;

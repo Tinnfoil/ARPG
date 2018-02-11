@@ -13,7 +13,7 @@ public class Jumper extends AI{
 	int jumpdistance;
 	Time jumptime=new Time();
 	Time chargetime=new Time();
-	int chargewaittime;
+	private int chargewaittime;
 	int angle;
 	int size;
 	double vel;
@@ -22,18 +22,21 @@ public class Jumper extends AI{
 		super(x,y,size,vel);
 		this.size=size;
 		this.vel=vel;
-		setHealth(100);
 		setMaxhealth(100);
+		setHealth(getMaxhealth());
 		Rectangle Rect= new Rectangle(getX(),getY(),size,size);
 		setRect(Rect);
-		jumprange=200;//pixels
+		jumprange=300;//pixels
 		jumping =false;
 		jumpdistance=300;
-		chargewaittime=35;
+		chargewaittime=50;
 	}
 	
 	public int getChargetime(){
 		return (int)chargetime.getTimer();
+	}
+	public int getChargewaittime(){
+		return chargewaittime;
 	}
 	
 	/**

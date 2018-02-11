@@ -73,6 +73,13 @@ public class BlockMap {
 		return p;
 	}
 	
+	public boolean openPoint(int x, int y){
+		Point p= getMapPos(x,y);
+		if(map[(int)p.getX()][(int)p.getY()]==0){
+			return true;
+		}
+		return false;
+	}
 	/**
 	 * @return return middle pixel coords of map[][] of specified map coord
 	 * getX()=i
@@ -87,7 +94,7 @@ public class BlockMap {
 	public Point getStartPos(){
 		for(int j=0;j<codemap[0].length;j++){
 			if(codemap[0][j].contains("N")){
-				System.out.println("TRUE"+getPixelPos(j,0).getX()+":"+getPixelPos(j,0).getY());
+				//System.out.println("TRUE"+getPixelPos(j,0).getX()+":"+getPixelPos(j,0).getY());
 				return getPixelPos(j*10,0);
 			}
 		}
@@ -188,7 +195,6 @@ public class BlockMap {
 			else if((nextCell[0]==-1&&nextCell[1]==-1)){
 				grid[lasti][lastj]=num;
 				valid=false;
-				System.out.println("Trigger");
 				done=true;
 			}
 			else{
@@ -242,7 +248,6 @@ public class BlockMap {
 			else{
 				coords[0]=i+1;
 				coords[1]=j;
-				System.out.println("ASJKJSA"+coords[0]+","+coords[1]);
 				valid=true;
 			}
 		}
@@ -1220,12 +1225,12 @@ public class BlockMap {
 				temp= new int[][]
 						{
 						{0,0,0,0,0,0,0,0,0,0},
+						{0,0,1,0,0,0,0,0,0,0},
+						{0,0,1,1,0,0,0,0,0,0},
+						{0,0,1,0,0,0,0,0,0,0},
 						{0,0,0,0,0,0,0,0,0,0},
-						{0,0,0,0,0,0,0,0,0,0},
-						{0,0,0,0,0,0,0,0,0,0},
-						{0,0,0,0,0,0,0,0,0,0},
-						{0,0,0,0,0,0,0,0,0,0},
-						{0,0,0,0,0,0,0,0,0,0},
+						{0,0,0,0,0,0,0,1,1,0},
+						{0,0,0,0,0,0,1,1,0,0},
 						{0,0,0,0,0,0,0,0,0,0},
 						{0,0,0,0,0,0,0,0,0,0},
 						{0,0,0,0,0,0,0,0,0,0},

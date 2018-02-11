@@ -36,6 +36,9 @@ public class InputHandler {
     	}
     }
     
+    public int[] getMouseCoords(){
+    	return mousecoords;
+    }
     public void setMouseCoords(int x1, int y1, int x2, int y2){
     	mousecoords[0]=x1;
     	mousecoords[1]=y1;
@@ -61,19 +64,19 @@ public class InputHandler {
     	}
     	if(multiKey.contains("DOWN")){
     		if(yVel<p.getSquare().getMaxspeed())
-    		yVel += p.getSquare().getAcceleration();;
+    		yVel += p.getSquare().getAcceleration();
     		if(yVel<0)
     		yVel += 3;
     	}
     	if(multiKey.contains("RIGHT")){
     		if(xVel<p.getSquare().getMaxspeed())
-    		xVel += p.getSquare().getAcceleration();;
+    		xVel += p.getSquare().getAcceleration();
     		if(xVel<0)
     		xVel += 3;
     	}	
     	if(multiKey.contains("LEFT")){
     		if(xVel>-p.getSquare().getMaxspeed())
-    		xVel += -p.getSquare().getAcceleration();;
+    		xVel += -p.getSquare().getAcceleration();
     		if(xVel>0)
     		xVel += -3;
     	}
@@ -122,10 +125,36 @@ public class InputHandler {
     	p.getSquare().setVelx(xVel);
     	p.getSquare().setVely(yVel);
 
+    	/**
     	if(multiKey.contains("CLICKED")){
     		if(spawning==true){
-    			p.spawnProjectile(mousecoords[0],mousecoords[1],mousecoords[2],mousecoords[3]);
+    			Projectile pro= new Projectile(mousecoords[0],mousecoords[1],mousecoords[2],mousecoords[3],10,60);
+    		
+    			pro.setVel(20);
+    			pro.setHurtsenemy(true);
+    			pro.setDamage(10);
+    			pro.setSquareshot(true);
+    			p.spawnProjectile(pro);
     			spawning=false;
+    		}
+    	}
+    	*/
+    	if(multiKey.contains("CLICKED")){
+    		if(spawning==true){
+    			double angle=p.getSquare().findAngle(mousecoords[3]-mousecoords[1], mousecoords[2]-mousecoords[0]);
+    			double interval=(p.getSquare().getProjectileshots()*5)/p.getSquare().getProjectileshots();
+        		Projectile[] ps= new Projectile[p.getSquare().getProjectileshots()];
+        		for(int i=0;i<ps.length;i++){
+        			Projectile po= new Projectile(mousecoords[0], mousecoords[1],mousecoords[2], mousecoords[3],10,60);
+        			po.setDamage(20);
+        			po.setVel(20);
+        			po.setHurtsenemy(true);
+        			po.setSquareshot(true);
+        			po.changeAngle(angle-((p.getSquare().getProjectileshots()*5)/2)+(i*interval));
+        			ps[i]=po;
+        		}
+        		p.spawnMultipleProjectiles(ps);
+        		spawning=false;	
     		}
     	}
     	
