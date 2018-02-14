@@ -51,8 +51,8 @@ public class Jumper extends AI{
 	 */
 	public void tick(Play p){//thinking methodd
 		super.tick();
-		int smidx=(p.getSquare().getX()+(int)p.getSquare().getRect().getMaxX())/2;
-		int smidy=(p.getSquare().getY()+(int)p.getSquare().getRect().getMaxY())/2;
+		int smidx=p.getSquare().getMidx();
+		int smidy=p.getSquare().getMidy();
 		int midx=(int)(getX()+getX()+getRect().getWidth())/2;
 		int midy=(int)(getY()+getY()+getRect().getHeight())/2;
 		
@@ -67,7 +67,7 @@ public class Jumper extends AI{
 			}
 			else{
 				if(chargetime.getTimer()<chargewaittime-15){//The charge up period
-					angle=(int) findAngle((smidy-getY())+(int)p.s.getVely()*20, smidx-getX()+(int)p.s.getVelx()*20);
+					angle=(int)findAngle((smidy-getMidy())+(int)p.s.getVely()*20, smidx-getMidx()+(int)p.s.getVelx()*20);
 				}
 				setVelx(0);
 				setVely(0);

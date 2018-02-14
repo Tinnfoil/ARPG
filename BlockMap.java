@@ -75,7 +75,7 @@ public class BlockMap {
 	
 	public boolean openPoint(int x, int y){
 		Point p= getMapPos(x,y);
-		if(map[(int)p.getX()][(int)p.getY()]==0){
+		if((int)p.getX()<map[0].length-1&&(int)p.getX()+1>0&&(int)p.getY()<map.length-1&&(int)p.getY()>1){
 			return true;
 		}
 		return false;

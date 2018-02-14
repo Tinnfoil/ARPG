@@ -58,35 +58,43 @@ public class InputHandler {
     	
     	if(multiKey.contains("UP")){
     		if(yVel>-p.getSquare().getMaxspeed())
-    		yVel += -p.getSquare().getAcceleration();
+    			yVel += -p.getSquare().getAcceleration();
+    		if(yVel<-p.getSquare().getMaxspeed())
+    			yVel= -p.getSquare().getMaxspeed();
     		if(yVel>0)
-    		yVel += -3;
+    			yVel += -3;
     	}
     	if(multiKey.contains("DOWN")){
     		if(yVel<p.getSquare().getMaxspeed())
-    		yVel += p.getSquare().getAcceleration();
+    			yVel += p.getSquare().getAcceleration();
+    		if(yVel>p.getSquare().getMaxspeed())
+    			yVel= p.getSquare().getMaxspeed();
     		if(yVel<0)
-    		yVel += 3;
+    			yVel += 3;
     	}
     	if(multiKey.contains("RIGHT")){
     		if(xVel<p.getSquare().getMaxspeed())
-    		xVel += p.getSquare().getAcceleration();
+    			xVel += p.getSquare().getAcceleration();
+    		if(xVel>p.getSquare().getMaxspeed())
+    			xVel= p.getSquare().getMaxspeed();
     		if(xVel<0)
-    		xVel += 3;
+    			xVel += 3;
     	}	
     	if(multiKey.contains("LEFT")){
     		if(xVel>-p.getSquare().getMaxspeed())
-    		xVel += -p.getSquare().getAcceleration();
+    			xVel += -p.getSquare().getAcceleration();
+    		if(xVel<-p.getSquare().getMaxspeed())
+    			xVel= -p.getSquare().getMaxspeed();
     		if(xVel>0)
-    		xVel += -3;
+    			xVel += -3;
     	}
     	if(multiKey.contains("LEFT") && multiKey.contains("RIGHT")){
     		xVel = 0;
-    		}
+    	}
     	if(multiKey.contains("UP") && multiKey.contains("DOWN")){
     		yVel = 0;
     	}
-    	if((multiKey.contains("UP") || multiKey.contains("DOWN")) && (!multiKey.contains("LEFT") && !multiKey.contains("RIGHT"))){
+    	if((multiKey.contains("UP") || multiKey.contains("DOWN")) && (!multiKey.contains("LEFT") && !multiKey.contains("RIGHT"))){//If player is only pressing horizontal movement, vertical movement is slowed down
     		if(xVel>0){
     			xVel-=.3;
     		}
@@ -94,27 +102,26 @@ public class InputHandler {
 				xVel+=.3;
 			}
     	}
-    	if((multiKey.contains("LEFT") || multiKey.contains("RIGHT")) && (!multiKey.contains("UP") && !multiKey.contains("DOWN"))){
+    	if((multiKey.contains("LEFT") || multiKey.contains("RIGHT")) && (!multiKey.contains("UP") && !multiKey.contains("DOWN"))){//If player is only pressing vertical movement, horizontal movement is slowed down
     		if(yVel>0){
     			yVel-=.3;
     		}
 			else if(yVel<0){
 				yVel+=.3;
 			}
-    	}
-    		
-    	if((!multiKey.contains("UP") && !multiKey.contains("DOWN")) && (!multiKey.contains("LEFT") && !multiKey.contains("RIGHT"))){
+    	}  		
+    	if((!multiKey.contains("UP") && !multiKey.contains("DOWN")) && (!multiKey.contains("LEFT") && !multiKey.contains("RIGHT"))){//Stops Square if none of movement keys are pressed
     		if(xVel>0){
-    			xVel--;
+    			xVel-=1;
     		}
 			else if(xVel<0){
-				xVel++;
+				xVel+=1;
 			}
     		if(yVel>0){
-    			yVel--;
+    			yVel-=1;
     		}
 			else if(yVel<0){
-				yVel++;
+				yVel+=1;
 			}
     	}
     	

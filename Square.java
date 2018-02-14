@@ -46,12 +46,12 @@ public class Square extends Object
         setSkillpoints(0);
         fireupgrade=false;
         canfreeze=false; setFreezeframes(0); setCurrfreezecooldown(0); setFreezecooldown(600);
-        phasewalkupgrade=false; setCurrphasewalkcooldown(0); setPhasewalkcooldown(300);
+        phasewalkupgrade=true; setCurrphasewalkcooldown(0); setPhasewalkcooldown(480);
         
         setMaxspeed(4);
-        setAcceleration(.3);
+        setAcceleration(2);
         setMaxhealth(100);
-        setHealth(getMaxhealth());//Base 100, can changes
+        setHealth(getMaxhealth());//Base 100, can change
         setAttackdamage(50);
         setAttackcooldown(20);
         setHealthonhit(0);
@@ -61,7 +61,7 @@ public class Square extends Object
         
         setInvunerable(false);
         isDashing=false;
-        setDashcooldown(60);//60 frame
+        setDashcooldown(60);//60 frames
         setParrycooldown(120);
         setSpeedboostduration(75);
     }
@@ -247,6 +247,7 @@ public class Square extends Object
 	
 	public void freezeTime(){
 		if(isCanfreeze()==true&&getCurrfreezecooldown()<=0){
+			setStunframes(0);
 			setInvunerableframes(120);
     		setFreezeframes(120);
     		setCurrfreezecooldown(getFreezecooldown());

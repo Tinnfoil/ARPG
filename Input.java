@@ -67,24 +67,26 @@ public class Input extends JPanel implements ActionListener, KeyListener, MouseL
         if(c==KeyEvent.VK_2){
         	if(p.getSquare().getSkillpoints()>0&&p.inbreak==true){
         		if(p.page1){
-        			p.s.setMaxspeed(p.getSquare().getMaxspeed()+1);
-        			p.getSquare().setSkillpoints(p.getSquare().getSkillpoints()-1);
+        			if(p.getSquare().getMaxspeed()<=7){
+        				p.s.setMaxspeed(p.getSquare().getMaxspeed()+1);
+        				p.getSquare().setSkillpoints(p.getSquare().getSkillpoints()-1);
+        			}
         		}
             	else if(p.getSquare().getSkillpoints()>=2){
-        			//
-        			//p.getSquare().setSkillpoints(p.getSquare().getSkillpoints()-2);
+        			p.getSquare().setCanfreeze(true);
+        			p.getSquare().setSkillpoints(p.getSquare().getSkillpoints()-2);
         		}
         	}
         }
         if(c==KeyEvent.VK_3){
         	if(p.getSquare().getSkillpoints()>0&&p.inbreak==true){
         		if(p.page1){
-        			p.s.setMaxhealth(p.getSquare().getMaxhealth()+25);
+        			p.s.setMaxhealth(p.getSquare().getMaxhealth()+50);
         			p.getSquare().setSkillpoints(p.getSquare().getSkillpoints()-1);
         		}
             	else if(p.getSquare().getSkillpoints()>=2){
-        			//
-        			//p.getSquare().setSkillpoints(p.getSquare().getSkillpoints()-2);
+        			p.getSquare().setPhasewalkupgrade(true);
+        			p.getSquare().setSkillpoints(p.getSquare().getSkillpoints()-2);
         		}
         	}
         }
@@ -117,7 +119,7 @@ public class Input extends JPanel implements ActionListener, KeyListener, MouseL
         if(c==KeyEvent.VK_6){
         	if(p.getSquare().getSkillpoints()>0&&p.inbreak==true){
         		if(p.page1){
-        			p.s.setHealthonhit(p.getSquare().getHealthonhit()+2);
+        			p.s.setHealthonhit(p.getSquare().getHealthonhit()+4);
         			p.getSquare().setSkillpoints(p.getSquare().getSkillpoints()-1);
         		}
             	else if(p.getSquare().getSkillpoints()>=2){
@@ -159,7 +161,7 @@ public class Input extends JPanel implements ActionListener, KeyListener, MouseL
         	}
         }
         if(c==KeyEvent.VK_R){
-        	p.projectileExplosion(p.getSquare().getMidx()+200, p.getSquare().getMidy(), true, true, 50 ,20, 30);
+        	//p.projectileExplosion(p.getSquare().getMidx()+200, p.getSquare().getMidy(), true, true, 50 ,20, 30);
         }
         if(c==KeyEvent.VK_X){
         	p.spawnPusher(p.getSquare().getMidx()+200, p.getSquare().getMidy(),30,6);

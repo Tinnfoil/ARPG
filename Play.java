@@ -153,15 +153,20 @@ public class Play extends JPanel implements Runnable
     				fps=frames;
     				frames=0;
     				//
+    				if(s.getHealth()<s.getMaxhealth()){//temporary life regen
+						s.setHealth(s.getHealth()+5);
+					}
     				if(!dead&&inbreak==false){
     					totaltime++;
     					spawnEnemies();
-    					if(s.getHealth()<s.getMaxhealth()){//temporary life regen
-    						s.setHealth(s.getHealth()+5);
-    					}
     					if(totaltime%60==0){
     						wave++;
-    						s.setSkillpoints(s.getSkillpoints()+1);
+    						if(wave==2){
+    							s.setSkillpoints(s.getSkillpoints()+2);
+    						}
+    						else{
+    							s.setSkillpoints(s.getSkillpoints()+1);
+    						}
     						inbreak=true;
     					}
     				}
@@ -196,6 +201,7 @@ public class Play extends JPanel implements Runnable
     }
     
     public void checkCollisions(){
+    	Random RN= new Random();
     	for(int i=0;i<blocks.size();i++){//Intersection between blocks and player
 			Block b= blocks.get(i);
 			int smidx=(s.getX()+(int)s.getRect().getMaxX())/2;
@@ -216,18 +222,19 @@ public class Play extends JPanel implements Runnable
 			if(AIs.get(i).getInvunerableframes()<=0){
 				if(h.getClass()==Projectile.class){
 					if(AIs.get(i).getRect().intersects(h.getRect())&&h.hurtsEnemy()==true&&((Projectile)h).isSquareshot()){
-						AIs.get(i).setHealth(AIs.get(i).getHealth()-((Projectile)h).getDamage());
+						AIs.get(i).setHealth(AIs.get(i).getHealth()-calculateAttackdamage(((Projectile)h).getDamage(),AIs.get(i)));
 						AIs.get(i).setStunframes(120);
 						s.setHealth(s.getHealth()+10);
 						s.boostSpeed(2, s.getSpeedboostduration());
 						isdead=true;
+						hitAnimation(s, AIs.get(i).getMidx(), AIs.get(i).getMidy(), RN.nextInt(4)+1, 90,5);
 						if(s.isFireupgrade()){
-							AIs.get(i).setDotframes(60);
+							AIs.get(i).setDotframes(80);
 							AIs.get(i).setDotdamage(1);
 						}
 					}
 					else if(AIs.get(i).intersects(h.getRect())&&h.hurtsEnemy()==true){
-						AIs.get(i).setHealth(AIs.get(i).getHealth()-((Projectile)h).getDamage());
+						AIs.get(i).setHealth(AIs.get(i).getHealth()-calculateAttackdamage(((Projectile)h).getDamage(),AIs.get(i)));
 						AIs.get(i).setStunframes(90);
 						isdead=true;
 					}
@@ -242,6 +249,7 @@ public class Play extends JPanel implements Runnable
 						}
 						AIs.get(i).setStunframes(AIs.get(i).getStunframes()+30);
 						s.setHealth(s.getHealth()+s.getHealthonhit());
+						hitAnimation(s, AIs.get(i).getMidx(), AIs.get(i).getMidy(), RN.nextInt(4)+1, 90,5);
 					}
 				}
 			}
@@ -344,6 +352,11 @@ public class Play extends JPanel implements Runnable
 				if(AIs.get(i).getClass()==Sprayer.class && a.getStunframes()>30){
 					projectileExplosion(a.getMidx(),a.getMidy(),true,false,50,20,40);
 				}
+				if(AIs.get(i).getDotframes()>0){
+					Circle c= new Circle(AIs.get(i).getMidx(),AIs.get(i).getMidy(),150,false,false,10);
+					circleBurn(c,120);
+					Circles.add(c);
+				}
 				AIs.remove(i);
 			}
 			if(s.getHealth()<=0){
@@ -356,7 +369,10 @@ public class Play extends JPanel implements Runnable
 				s.knockback(s, c.getX(), c.getY(), 1.5);
 				s.setHealth(s.getHealth()-30);
 				s.setInvunerableframes(10);
-				s.setStunframes(5);
+				s.setStunframes(5);	
+			}
+			if(c.getLifetime()==0&&(c.hurtsallies==true||c.hurtsenemy==true)){
+				explodeAnimation(c.getX(),c.getY(),10,15);
 			}
 			if(c.getXoff()!=0||c.getYoff()!=0){
 				circleTeleport(c);
@@ -444,7 +460,7 @@ public class Play extends JPanel implements Runnable
 		if(s.getCurrparrycooldown()>0&&s.getParryframes()==0){
 			s.setCurrparrycooldown(s.getCurrparrycooldown()-1);
 		}
-		if(s.getDotframes()>0){
+		if(s.getDotframes()>0&&s.getHealth()>s.getDotdamage()){
 			if(s.getDotframes()%2==0){s.setHealth(s.getHealth()-s.getDotdamage());}
 			s.setDotframes(s.getDotframes()-1);
 		}
@@ -588,10 +604,14 @@ public class Play extends JPanel implements Runnable
     }
     
     public int calculateAttackdamage(int basedamage, AI a){
+    	int damage= basedamage;
     	if(a.getStunframes()>0){
-    		return basedamage*2;
+    		damage=damage*2;
     	}
-    	return basedamage;
+    	if(s.isPhasewalkupgrade()&&s.getSpeedboost()>0){
+    		damage=damage*2;
+    	}
+    	return damage;
     }
     
 	/**
@@ -638,6 +658,35 @@ public class Play extends JPanel implements Runnable
 		}
 	}
 	
+	public void hitAnimation(Object o, int x, int y, int amount, int spread, int lifetime){
+		Random RN= new Random();
+		for(int i=0;i<amount;i++){
+			int randdegree=(int)RN.nextInt(spread)*(int)(Math.pow(-1, (RN.nextInt(2)+1)));
+			int randpointx=(int)RN.nextInt(10)*(int)(Math.pow(-1, (RN.nextInt(2)+1)));
+			int randpointy=(int)RN.nextInt(10)*(int)(Math.pow(-1, (RN.nextInt(2)+1)));
+			Projectile p= new Projectile(x+randpointx,y+randpointy,o.getMidx(),o.getMidy(),5,lifetime);
+			p.setHurtsallies(false);
+			p.setHurtsenemy(false);
+			p.changeAngle(p.angle+randdegree+180);
+			Projectiles.add(p);
+		}
+	}
+	
+	public void explodeAnimation(int x, int y, int amount, int lifetime){
+		Hitbox h= new Hitbox(x,y,1,1,1);
+		hitAnimation(h,x,y,amount,360,lifetime);
+	}
+	
+	public void burnAnimation(Object o){
+		Random RN= new Random();
+		int randpointx=(int)RN.nextInt((int)o.getRect().getWidth()/2)*(int)(Math.pow(-1, (RN.nextInt(2)+1)));
+		int randpointy=(int)RN.nextInt((int)o.getRect().getHeight()/2)*(int)(Math.pow(-1, (RN.nextInt(2)+1)));
+		Projectile p= new Projectile(o.getMidx()+randpointx,o.getMidy()+randpointy,o.getMidx()+randpointx,o.getMidy()+randpointy-10,5,5);
+		p.setHurtsallies(false);
+		p.setHurtsenemy(false);
+		Projectiles.add(p);
+	}
+	
 	public void spawnCircle(int x, int y, int radius, boolean hurtsenemy, boolean hurtsallies, int lifetime){
 		Circle c= new Circle(x,y,radius,hurtsenemy,hurtsallies,lifetime);
 		Circles.add(c);
@@ -673,6 +722,18 @@ public class Play extends JPanel implements Runnable
 			s.setHealth(s.getHealth()-damage);
 			s.setStunframes(duration);
 		}
+	}
+	
+	public void circleBurn(Circle c, int frames){
+		for(int i=0;i<AIs.size();i++){
+			if(c.intersects(AIs.get(i))){
+				AIs.get(i).setDotframes(frames);
+				AIs.get(i).setDotdamage(1);
+			}
+		}
+		//Hitbox h= new Hitbox(c.getX(),c.getY(),1,1,1);
+		//hitAnimation(h,c.getX(),c.getY(),30,360,20);
+		explodeAnimation(c.getX(),c.getY(),15,20);	
 	}
 	
     public void paintComponent(Graphics g){
@@ -718,11 +779,16 @@ public class Play extends JPanel implements Runnable
         		g2d.setColor(Color.RED);
         	}
         	if(s.getInvunerableframes()>0&&s.getFreezeframes()<=0){//Animation for damage invulnerbility 
-        		if(s.getInvunerableframes()%2==0){
+        		if(s.isPhasewalkupgrade()){
         			g2d.setColor(Color.RED);
         		}
         		else{
-        			g2d.setColor(Color.BLACK);
+        			if(s.getInvunerableframes()%2==0){
+        				g2d.setColor(Color.RED);
+        			}
+        			else{
+        				g2d.setColor(Color.BLACK);
+        			}
         		}
         	}
         	if(s.getStunframes()>0){
@@ -752,18 +818,18 @@ public class Play extends JPanel implements Runnable
         		if(page1==true){
         			g.drawString("(1) +2 Projectiles per shot", s.getX()+s.getWidth(), s.getY()+20);
         			g.drawString("(2) +1 Max speed Curr["+s.getMaxspeed()+"]", s.getX()+s.getWidth(), s.getY()+30);
-        			g.drawString("(3) +25 Max Health Curr["+s.getMaxhealth()+"]", s.getX()+s.getWidth(), s.getY()+40);
+        			g.drawString("(3) +50 Max Health Curr["+s.getMaxhealth()+"]", s.getX()+s.getWidth(), s.getY()+40);
         			g.drawString("(4) +10 Attack Damage Curr["+s.getAttackdamage()+"]", s.getX()+s.getWidth(), s.getY()+50);
         			g.drawString("(5) -.2 Dash Cooldown Curr["+(double)s.getDashcooldown()/60+"]", s.getX()+s.getWidth(), s.getY()+60);
-        			g.drawString("(6) +2 Health on Hit Curr["+s.getHealthonhit()+"]", s.getX()+s.getWidth(), s.getY()+70);
+        			g.drawString("(6) +4 Health on Hit Curr["+s.getHealthonhit()+"]", s.getX()+s.getWidth(), s.getY()+70);
         			g.drawString("(0) Ascension Page", s.getX()+s.getWidth(), s.getY()+80);
         		}
         		else{
-        			if(s.isFireupgrade()==false){g.drawString("(1) Projectiles inflict 30 burn damage[2 SP]", s.getX()+s.getWidth(), s.getY()+20);}
+        			if(s.isFireupgrade()==false){g.drawString("(1) Projectiles inflict 40 burn damage[2 SP]", s.getX()+s.getWidth(), s.getY()+20);}
         			else{g.drawString("(X) Fire upgrade obtained", s.getX()+s.getWidth(), s.getY()+20);}
-        			if(s.isCanfreeze()==false){g.drawString("(2) Freeze Time on Parry(2 seconds; 10 sec cooldown;F)[2 SP]", s.getX()+s.getWidth(), s.getY()+30);}
+        			if(s.isCanfreeze()==false){g.drawString("(2) Freeze Time on Parry(2 seconds; 10 sec cooldown)[2 SP]", s.getX()+s.getWidth(), s.getY()+30);}
         			else{g.drawString("(X) Freeze upgrade obtained", s.getX()+s.getWidth(), s.getY()+30);}
-        			if(s.isPhasewalkupgrade()==false){g.drawString("(3) Phasewalk after dash (1.5 seconds; 5 sec cooldown; SHIFT)[2 SP]", s.getX()+s.getWidth(), s.getY()+40);}
+        			if(s.isPhasewalkupgrade()==false){g.drawString("(3) Phasewalk after dash;x2 damage when speed boosted (1.5 seconds; 8 sec cooldown)[2 SP]", s.getX()+s.getWidth(), s.getY()+40);}
         			else{g.drawString("(X) Phasewalk obtained", s.getX()+s.getWidth(), s.getY()+40);}
         			g.drawString("(4) Work in Progress", s.getX()+s.getWidth(), s.getY()+50);
         			g.drawString("(5) Work in Progress", s.getX()+s.getWidth(), s.getY()+60);
@@ -777,6 +843,15 @@ public class Play extends JPanel implements Runnable
         		g.drawLine(s.getX(), s.getY()+s.getHeight(), s.getX()+s.getWidth(), s.getY());
         		g.drawString("TIME:"+totaltime+"  KILLS:"+totalkills+"  WAVE:"+wave,(int)s.getX()-55,(int)s.getY()-20);
         		g2d.setColor(Color.BLACK);
+        		g.drawString("Special Thanks to:",bm.startx+bm.getScale()*bm.map[0].length+300,bm.starty+20);
+        		g.drawString("Adrian Tsang",bm.startx+bm.getScale()*bm.map[0].length+300,bm.starty+40);
+        		g.drawString("James Lai",bm.startx+bm.getScale()*bm.map[0].length+300,bm.starty+60);
+        		g.drawString("William Cheng",bm.startx+bm.getScale()*bm.map[0].length+300,bm.starty+80);
+        		g.drawString("Pampreet Gill",bm.startx+bm.getScale()*bm.map[0].length+300,bm.starty+100);
+        		g.drawString("Benjamin Lee",bm.startx+bm.getScale()*bm.map[0].length+300,bm.starty+120);
+        		g.drawString("Ryan Cheng",bm.startx+bm.getScale()*bm.map[0].length+300,bm.starty+140);
+        		g.drawString("Catherine Nguyen",bm.startx+bm.getScale()*bm.map[0].length+300,bm.starty+160);
+        		g.drawString("David Jian",bm.startx+bm.getScale()*bm.map[0].length+300,bm.starty+180);
         	}
         	//----------------------
         	if(debug){
@@ -802,7 +877,13 @@ public class Play extends JPanel implements Runnable
             }
             for(int i=0;i<blocks.size();i++){
             	Block b= blocks.get(i);
-            	g2d.setColor(Color.GREEN);
+            	if(s.getFreezeframes()>0){
+            		Color c= new Color(1,1,200);
+            		g.setColor(c);
+            	}
+            	else{
+            		g2d.setColor(Color.GREEN);
+            	}
             	g.fillRect(b.getX()+xoff, b.getY()+yoff, b.getWidth(), b.getHeight());
             	g2d.setColor(Color.BLACK);
             	g.drawRect(b.getX()+xoff, b.getY()+yoff, b.getWidth(), b.getHeight());
@@ -831,7 +912,8 @@ public class Play extends JPanel implements Runnable
             			if(((Jumper)a).chargetime.time>((Jumper)a).getChargewaittime()/3){
             				g.drawString("!",(int)a.getX()+(a.getSize()/2)+2, (int)a.getY()+(a.getSize()/2));
             				if(((Jumper)a).chargetime.time>(((Jumper)a).getChargewaittime()*2)/3){
-                				g.drawString("!",(int)a.getX()+(a.getSize()/2)+6, (int)a.getY()+(a.getSize()/2));
+                				g.drawString("!",(int)a.getX()+(a.getSize()/2)+6, (int)a.getY()+(a.getSize()/2));// Longest equation I ever made. Lord Almightly
+                				g.drawLine(a.getMidx(), a.getMidy(), a.getMidx()+(int)(Math.cos(Math.toRadians(((Jumper)a).angle))*300)-(int)((Math.cos(Math.toRadians(((Jumper)a).angle))*300)*((Jumper)a).jumptime.time/30), a.getMidy()+(int)(Math.sin(Math.toRadians(((Jumper)a).angle))*300)-(int)((Math.sin(Math.toRadians(((Jumper)a).angle))*300)*((Jumper)a).jumptime.time/30));
                 			}
             			}
             			g.setColor(Color.BLACK);
@@ -875,20 +957,25 @@ public class Play extends JPanel implements Runnable
             	
             	if(a.getDotframes()>0){
             		g2d.setColor(Color.ORANGE); 
-            		g2d.drawString("Burning!", a.getX(), a.getY()-10);   		
+            		if(a.getDotframes()%2==0){burnAnimation(AIs.get(i));}
+            		g2d.drawString("Burning!", a.getX(), a.getY()-10);  
+            		g.drawRect((int)a.getX(), (int)a.getY(), (int)a.getSize(), (int)a.getSize());
             	}
             	if(a.getStunframes()>0){
             		Color c= new Color(100,200,1);
             		g.setColor(c);
             		g.drawString("Stunned!",(int)a.getX(), (int)a.getY()+(int)a.getRect().getHeight()+10);  
+            		g.drawRect((int)a.getX(), (int)a.getY(), (int)a.getSize(), (int)a.getSize());
             	}
+            	g.setColor(Color.BLACK);//must be above freeze because freeze makes everything blue!
             	if(s.getFreezeframes()>0){
             		Color c= new Color(1,1,100);
             		g.setColor(c);    
-            		g.drawString("Frozen!",(int)a.getX(), (int)a.getY()-10);  
+            		g.drawString("Frozen!",(int)a.getX(), (int)a.getY()-10);
+            		g.drawRect((int)a.getX(), (int)a.getY(), (int)a.getSize(), (int)a.getSize());
             	}
-            	g.drawRect((int)a.getX(), (int)a.getY(), (int)a.getSize(), (int)a.getSize());
-            	g.setColor(Color.BLACK);
+            	//g.drawRect((int)a.getX(), (int)a.getY(), (int)a.getSize(), (int)a.getSize());
+            	//g.setColor(Color.BLACK);
             	if(a.getHealth()>0){//Enemy Hp bars
             		g2d.drawRect(a.getX(), a.getY()-7, (int)(a.getRect().getWidth()*a.getHealth()/a.getMaxhealth()), 5);
             	}
@@ -919,6 +1006,7 @@ public class Play extends JPanel implements Runnable
             			g.setColor(Color.RED);
             		}
             		g.drawArc(c.getX()-c.getRadius(), c.getY()-c.getRadius(), c.getRadius()*2, c.getRadius()*2, 0, 360);
+            		//---
             		g.setColor(Color.BLACK);
             	}
             }
@@ -995,7 +1083,7 @@ public class Play extends JPanel implements Runnable
 				foundspot=true;
 			}
 			foundspot=false;
-			while(foundspot==false&&(totaltime-10)%20==0){
+			while(foundspot==false&&((totaltime-10)%20==0)||totaltime>120&&totaltime%30==0){
 				Point p= randomPointnear(s.getX(),s.getY(),600);
 				Sprayer sp= new Sprayer((int)p.getX(),(int)p.getY(),30,6);
 				AIs.add(sp);
