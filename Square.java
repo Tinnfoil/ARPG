@@ -12,7 +12,7 @@ public class Square extends Object
     private int skillpoints;
     private boolean fireupgrade;
     private boolean canfreeze; private int freezeframes; private int currfreezecooldown; private int freezecooldown;
-    private boolean phasewalkupgrade; private int currphasewalkcooldown; private int phasewalkcooldown;
+    private boolean phasewalkupgrade; private int currphasewalkcooldown; private int phasewalkcooldown; private boolean phasewalking;
     
     private int attackdamage;
     private boolean attacking;
@@ -21,6 +21,7 @@ public class Square extends Object
     private int currattackcooldown;
     private int attackamount;
     private int healthonhit;
+    private boolean canlifesteal;
     
     
     private int shotcharges;
@@ -39,22 +40,23 @@ public class Square extends Object
     {
     	width=30;
     	height=30;
-        setX(500);//4150
-        setY(500);
+        setX(700);//4150
+        setY(700);
         Rectangle rect= new Rectangle(getX(),getY(),width,height);
         setRect(rect);
         setSkillpoints(0);
         fireupgrade=false;
-        canfreeze=false; setFreezeframes(0); setCurrfreezecooldown(0); setFreezecooldown(600);
-        phasewalkupgrade=true; setCurrphasewalkcooldown(0); setPhasewalkcooldown(480);
+        canfreeze=true; setFreezeframes(0); setCurrfreezecooldown(0); setFreezecooldown(780);
+        phasewalkupgrade=false; setCurrphasewalkcooldown(0); setPhasewalkcooldown(600); phasewalking=false;
         
         setMaxspeed(4);
         setAcceleration(2);
         setMaxhealth(100);
         setHealth(getMaxhealth());//Base 100, can change
-        setAttackdamage(50);
+        setAttackdamage(500);
         setAttackcooldown(20);
         setHealthonhit(0);
+        
         
         setShotcharges(3);
         setProjectileshots(1);
@@ -248,8 +250,8 @@ public class Square extends Object
 	public void freezeTime(){
 		if(isCanfreeze()==true&&getCurrfreezecooldown()<=0){
 			setStunframes(0);
-			setInvunerableframes(120);
-    		setFreezeframes(120);
+			setInvunerableframes(180);
+    		setFreezeframes(180);
     		setCurrfreezecooldown(getFreezecooldown());
     	}
 	}
@@ -292,6 +294,22 @@ public class Square extends Object
 
 	public void setPhasewalkcooldown(int phasewalkcooldown) {
 		this.phasewalkcooldown = phasewalkcooldown;
+	}
+
+	public boolean isCanlifesteal() {
+		return canlifesteal;
+	}
+
+	public void setCanlifesteal(boolean canlifesteal) {
+		this.canlifesteal = canlifesteal;
+	}
+
+	public boolean isPhasewalking() {
+		return phasewalking;
+	}
+
+	public void setPhasewalking(boolean phasewalking) {
+		this.phasewalking = phasewalking;
 	}
 
 

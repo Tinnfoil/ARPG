@@ -16,10 +16,13 @@ public class Hitbox extends Object{
     private boolean hurtsallies;
     private boolean neutral;
     private int damage;
+    private String color;
+    
     public Hitbox(int x, int y, int width, int height,int lifetime){
     	Rectangle rect= new Rectangle(x,y,width,height);
     	setRect(rect);
     	setLifeTime(lifetime);
+    	setColor("BLACK");
     }
     public Hitbox(){
     	super();
@@ -68,6 +71,12 @@ public class Hitbox extends Object{
 	}
 	public void setDamage(int damage) {
 		this.damage = damage;
+	}
+	public String getColor() {
+		return color;
+	}
+	public void setColor(String color) {
+		this.color = color;
 	}
     
 }

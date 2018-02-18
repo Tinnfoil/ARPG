@@ -73,9 +73,16 @@ public class BlockMap {
 		return p;
 	}
 	
+	public boolean outOfbounds(Object o){
+		if(openPoint(o.getX(),o.getY())){
+			return false;
+		}
+		return true;
+	}
+	
 	public boolean openPoint(int x, int y){
 		Point p= getMapPos(x,y);
-		if((int)p.getX()<map[0].length-1&&(int)p.getX()+1>0&&(int)p.getY()<map.length-1&&(int)p.getY()>1){
+		if((int)p.getX()<map[0].length-3&&(int)p.getX()>3&&(int)p.getY()<map.length-3&&(int)p.getY()>3){
 			return true;
 		}
 		return false;

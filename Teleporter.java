@@ -4,23 +4,20 @@ import java.awt.Point;
 import java.awt.Rectangle;
 
 public class Teleporter extends AI{
+	
 	Time shotcooldown = new Time();
-	Time chargetime= new Time();
-	private boolean canshoot;
 	private boolean locked;
-	private int shootcooldown;
-	private int shootrange;
 	private int currcastduration;
 	private int castduration;
-	double angle;
+	
 	public Teleporter(int x, int y, int size, double vel){
 		super(x,y,size,vel);
 		
 		Rectangle Rect= new Rectangle(getX(),getY(),size,size);
 		setRect(Rect);
-		setMaxhealth(160);
+		setMaxhealth(150);
 		setHealth(getMaxhealth());
-		setShootrange(400);
+		setRange(400);
 		setCastduration(60);
 		setCurrcastduration(getCastduration());
 		setShootcooldown(90);
@@ -34,32 +31,32 @@ public class Teleporter extends AI{
 		int midx=(int)(getX()+getX()+getRect().getWidth())/2;
 		int midy=(int)(getY()+getY()+getRect().getHeight())/2;
 		
-		if(distance(midx,midy,smidx,smidy)<p.bm.scale*16){
+		if(distance(midx,midy,smidx,smidy)<p.bm.scale*30){
 			move((double)getVelx(),(double)getVely());
-			if(canshoot==true){//Shoot at player if they can
-				chargetime.tick();
+			if(canShoot()==true){//Shoot at player if they can
+				getCooldown().tick();
 				shotcooldown.tick();
 				if(locked){
 					setVelx(0);
 					setVely(0);
 					if(shotcooldown.time>getCastduration()){
-						canshoot=false;
+						setCanshoot(false);
 						locked=false;
 					}
 				}
-				else if(distance(midx,midy,smidx,smidy)<shootrange-(shootrange/2)){
+				else if(distance(midx,midy,smidx,smidy)<getRange()-(getRange()/2)){
 					double a=findAngle(smidy-midy,smidx-midx);
 					//move((Math.cos(Math.toRadians(a))*vel),(Math.sin(Math.toRadians(a))*vel));
 					setVelx((Math.cos(Math.toRadians(a))*(getMaxspeed()/2)));
 					setVely((Math.sin(Math.toRadians(a))*(getMaxspeed()/2)));
 				}
-				else if(chargetime.getTimer()>getShootcooldown()){
+				else if(getCooldown().getTimer()>getShootcooldown()){
 		        	Circle co= new Circle(getMidx(),getMidy(),100,false,false,getCastduration()+1);
 		        	co.setXoff(p.getSquare().getMidx()-getMidx()+(int)(p.getSquare().getVelx()*30));
 		        	co.setYoff(p.getSquare().getMidy()-getMidy()+(int)(p.getSquare().getVely()*30));
 		        	co.setCanteleport(true);
-		        	p.spawnCircle(getMidx(), getMidy(), 100, false, false, getCastduration());
-		        	p.spawnDelayedcircle(co,getCastduration());
+		        	p.spawnCircle(getMidx(), getMidy(), 100, false, false, getCastduration(),0);
+		        	p.spawnDelayedcircle(co,getCastduration(),10);
 					Point a= p.bm.getMapPos(getX(), getY());
 					nextnode=new Node((int)a.getX(),(int)a.getY(),(int)a.getX(),(int)a.getY());
 					locked=true;
@@ -70,41 +67,22 @@ public class Teleporter extends AI{
 					setVely(0);
 				}
 			}
-			else if(path(smidx,smidy,shootrange+50,p)==true){// Path to player if player is further than the shootrange
+			else if(canShoot()==false&&distance(smidx, smidy)<getRange()){//prepares to shoot!
+				getCooldown().time=0;
+				setCanshoot(true);
+			}
+			else if(path(smidx,smidy,getRange()+50,p)==true){// Path to player if player is further than the shootrange
 				//Resets
-				chargetime.time=0;
-				canshoot=false;
+				getCooldown().time=0;
+				setCanshoot(false);
 			}
-			else if(canshoot==false&&distance(smidx, smidy)<shootrange){//prepares to shoot!
-				chargetime.time=0;
-				canshoot=true;
-			}
-			else if(canshoot==false){//If player is between shoot and pathrange, simply follows player
+			else if(canShoot()==false){//If player is between shoot and pathrange, simply follows player
 				followPoint(midx,midy,smidx,smidy);
 				shotcooldown.tick();
 			}
 		}
 		}
 	
-	public boolean isCanshoot() {
-		return canshoot;
-	}
-	public void setCanshoot(boolean canshoot) {
-		this.canshoot = canshoot;
-	}
-	public int getShootcooldown() {
-		return shootcooldown;
-	}
-	public void setShootcooldown(int shootcooldown) {
-		this.shootcooldown = shootcooldown;
-	}
-	public int getShootrange() {
-		return shootrange;
-	}
-	public void setShootrange(int shootrange) {
-		this.shootrange = shootrange;
-	}
-
 	public int getCurrcastduration() {
 		return currcastduration;
 	}

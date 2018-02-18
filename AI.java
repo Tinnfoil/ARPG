@@ -8,6 +8,13 @@ public class AI extends Object{
 	int size;
     private int health;
     private int maxhealth;
+ 
+    private Time cooldown= new Time();//Current cooldown of the AI's ability
+    private int shootcooldown;//The cooldown of Ai's Ability (Jump has a 1 second cooldown)
+    private boolean canshoot;//Whether or not the Ai can use it's ability
+    private int range;//Range in which the ai uses it's ability
+    private double angle;//Optional angle 
+    
 	Node lastnode;
 	Node nextnode;
 	boolean pathing;
@@ -18,6 +25,11 @@ public class AI extends Object{
 		setY(y);
 		health=100;
 		maxhealth=100;
+		
+		setShootcooldown(60);
+		setCanshoot(false);
+		setRange(200);
+		
 		setStunframes(0);
 		setVelx(vel);
 		setVely(vel);
@@ -186,6 +198,51 @@ public class AI extends Object{
 		else{
 			this.health = health;
 		}
+	}
+
+	public Time getCooldown() {
+		return cooldown;
+	}
+
+	public void setCooldown(Time cooldown) {
+		this.cooldown = cooldown;
+	}
+
+	public boolean canShoot() {
+		return canshoot;
+	}
+
+	public void setCanshoot(boolean canshoot) {
+		this.canshoot = canshoot;
+	}
+
+	public int getShootcooldown() {
+		return shootcooldown;
+	}
+
+	public void setShootcooldown(int shootcooldown) {
+		if(shootcooldown<20){//Lowest lowering of cooldowns
+			this.shootcooldown = 20;
+		}
+		else{
+			this.shootcooldown = shootcooldown;
+		}
+	}
+
+	public int getRange() {
+		return range;
+	}
+
+	public void setRange(int range) {
+		this.range = range;
+	}
+
+	public double getAngle() {
+		return angle;
+	}
+
+	public void setAngle(double angle) {
+		this.angle = angle;
 	}
 		
 	

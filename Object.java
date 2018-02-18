@@ -133,17 +133,21 @@ public class Object {
 	}
 	
 	   public void move(double x, double y){
-		   if(x>0){
-			   x=x+getSpeedboost();
+		   if(x!=0){
+			   if(x>0){
+				   x=x+getSpeedboost();
+			   }
+			   else if(x<0){
+				   x=x-getSpeedboost();
+			   }
 		   }
-		   else{
-			   x=x-getSpeedboost();
-		   }
-		   if(y>0){
-			 y=y+getSpeedboost();  
-		   }
-		   else{
-			 y=y-getSpeedboost();
+		   if(y!=0){
+			   if(y>0){
+				   y=y+getSpeedboost();  
+			   }
+			   else if(y<0){
+				   y=y-getSpeedboost();
+			   }
 		   }
 	    	setX((getX()+(int)x));
 	    	setY((getY()+(int)y));

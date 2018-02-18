@@ -6,11 +6,13 @@ public class Circle {
 	int x;
 	int y;
 	int radius;
+	private int damage;
 	private int lifetime;
 	private int totallifetime;
 	boolean hurtsenemy;
 	boolean hurtsallies;
 	private int spawndelay;
+	private String Color;
 	
 	private boolean canteleport;
 	private int xoff;//Teleport 
@@ -24,6 +26,8 @@ public class Circle {
 		this.hurtsallies=hurtsallies;
 		this.lifetime=lifetime;
 		totallifetime=lifetime;
+		setDamage(0);
+		setColor("BLACK");
 		
 		canteleport=false;
 		setXoff(0);
@@ -127,5 +131,21 @@ public class Circle {
 
 	public void setTotallifetime(int totallifetime) {
 		this.totallifetime = totallifetime;
+	}
+
+	public int getDamage() {
+		return damage;
+	}
+
+	public void setDamage(int damage) {
+		this.damage = damage;
+	}
+
+	public String getColor() {
+		return Color;
+	}
+
+	public void setColor(String color) {
+		Color = color;
 	}
 }

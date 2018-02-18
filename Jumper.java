@@ -9,34 +9,20 @@ import java.awt.Rectangle;
  */
 public class Jumper extends AI{
 
-	int jumprange;
 	int jumpdistance;
 	Time jumptime=new Time();
-	Time chargetime=new Time();
-	private int chargewaittime;
-	int angle;
-	int size;
-	double vel;
 	boolean jumping;
 	public Jumper(int x, int y, int size, double vel){
 		super(x,y,size,vel);
-		this.size=size;
-		this.vel=vel;
 		setMaxhealth(100);
 		setHealth(getMaxhealth());
 		Rectangle Rect= new Rectangle(getX(),getY(),size,size);
 		setRect(Rect);
-		jumprange=300;//pixels
+		
+		setRange(250);//pixels
 		jumping =false;
 		jumpdistance=300;
-		chargewaittime=50;
-	}
-	
-	public int getChargetime(){
-		return (int)chargetime.getTimer();
-	}
-	public int getChargewaittime(){
-		return chargewaittime;
+		setShootcooldown(50);
 	}
 	
 	/**
@@ -56,30 +42,30 @@ public class Jumper extends AI{
 		int midx=(int)(getX()+getX()+getRect().getWidth())/2;
 		int midy=(int)(getY()+getY()+getRect().getHeight())/2;
 		
-		if(distance(midx,midy,smidx,smidy)<p.bm.scale*16){
+		if(distance(midx,midy,smidx,smidy)<p.bm.scale*30){
 		move((double)getVelx(),(double)getVely());
 		if(jumping==true){//Jumps at player after given charging time.
-			chargetime.tick();
-			if(chargetime.getTimer()>chargewaittime){//The actual jump
-				launch(getX(),getY(),smidx,smidy);
+			getCooldown().tick();
+			if(getCooldown().getTimer()>getShootcooldown()){//The actual jump
+				launch(getMidx(),getMidy(),smidx,smidy);
 				Point a= p.bm.getMapPos(getX(), getY());
 				nextnode=new Node((int)a.getX(),(int)a.getY(),(int)a.getX(),(int)a.getY());
 			}
 			else{
-				if(chargetime.getTimer()<chargewaittime-15){//The charge up period
-					angle=(int)findAngle((smidy-getMidy())+(int)p.s.getVely()*20, smidx-getMidx()+(int)p.s.getVelx()*20);
+				if(getCooldown().getTimer()<getShootcooldown()-15){//The charge up period
+					setAngle((int)findAngle((smidy-getMidy())+(int)p.s.getVely()*20, smidx-getMidx()+(int)p.s.getVelx()*20));
 				}
 				setVelx(0);
 				setVely(0);
 			}
 		}
-		else if(path(smidx,smidy,jumprange,p)==true){// Path to player if player is further than the distance provide Jumprange(200)
-			chargetime.time=0;
-			jumping=false;
-		}
-		else if(jumping==false&&distance(smidx, smidy)<jumprange){//prepares to jump
-			chargetime.time=0;
+		else if(jumping==false&&distance(smidx, smidy)<getRange()){//prepares to jump
+			getCooldown().time=0;
 			jumping=true;
+		}
+		else if(path(smidx,smidy,getRange(),p)==true){// Path to player if player is further than the distance provide Jumprange(200)
+			getCooldown().time=0;
+			jumping=false;
 		}
 		else if(jumping==false){//If player is between jumprange and pathrange, simply follows player
 			followPoint(midx,midy,smidx,smidy);
@@ -95,7 +81,7 @@ public class Jumper extends AI{
 	 */
 	public void launch(int x, int y, int midx, int midy){
 			jumptime.tick();
-			move((Math.cos(Math.toRadians(angle))*10),(Math.sin(Math.toRadians(angle))*10));
+			move((Math.cos(Math.toRadians(getAngle()))*10),(Math.sin(Math.toRadians(getAngle()))*10));
 			if(jumptime.getTimer()>=30){
 				jumping=false;
 				jumptime.time=0;

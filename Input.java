@@ -55,8 +55,10 @@ public class Input extends JPanel implements ActionListener, KeyListener, MouseL
         if(c==KeyEvent.VK_1){
         	if(p.getSquare().getSkillpoints()>0&&p.inbreak==true){
         		if(p.page1){
-        			p.s.setProjectileshots(p.getSquare().getProjectileshots()+2);
-        			p.getSquare().setSkillpoints(p.getSquare().getSkillpoints()-1);
+        			if(p.getSquare().getProjectileshots()<5){
+        				p.s.setProjectileshots(p.getSquare().getProjectileshots()+2);
+        				p.getSquare().setSkillpoints(p.getSquare().getSkillpoints()-1);
+        			}
         		}
         		else if(p.getSquare().getSkillpoints()>=2&&p.getSquare().isFireupgrade()==false){
         			p.getSquare().setFireupgrade(true);
@@ -161,7 +163,12 @@ public class Input extends JPanel implements ActionListener, KeyListener, MouseL
         	}
         }
         if(c==KeyEvent.VK_R){
-        	//p.projectileExplosion(p.getSquare().getMidx()+200, p.getSquare().getMidy(), true, true, 50 ,20, 30);
+        	Dodger d= new Dodger(p.getSquare().getMidx()+200, p.getSquare().getMidy(),30,6);
+        	p.AIs.add(d);
+        }
+        if(c==KeyEvent.VK_H){
+        	Healer h= new Healer(p.getSquare().getMidx()+200, p.getSquare().getMidy(),25,7);
+        	p.AIs.add(h);
         }
         if(c==KeyEvent.VK_X){
         	p.spawnPusher(p.getSquare().getMidx()+200, p.getSquare().getMidy(),30,6);
@@ -170,9 +177,21 @@ public class Input extends JPanel implements ActionListener, KeyListener, MouseL
         	Teleporter t= new Teleporter(p.getSquare().getMidx()+200, p.getSquare().getMidy(),35,6);
         	p.AIs.add(t);
         }
+        if(c==KeyEvent.VK_B){
+        	Boss b= new Boss(p.getSquare().getMidx()+200, p.getSquare().getMidy(),50,2);
+        	p.AIs.add(b);
+        }
+        if(c==KeyEvent.VK_M){
+        	if(p.opening==false){
+        		p.opening=true;
+        	}
+        	else{
+        		p.opening=false;
+        	}
+        }
         if(c==KeyEvent.VK_G){
-        	double interval=60/6;
-        	Projectile[] ps= new Projectile[5];
+        	double interval=360/8;
+        	Projectile[] ps= new Projectile[8];
         	for(int i=0;i<ps.length;i++){
         		Projectile po= new Projectile(p.getSquare().getMidx(), p.getSquare().getMidy(),p.getSquare().getMidx(), p.getSquare().getMidy(),7,40);
         		po.setDamage(20);
@@ -265,15 +284,15 @@ public class Input extends JPanel implements ActionListener, KeyListener, MouseL
 				p.getHandler().attackdelay=4;
 				p.getHandler().addInput("ATTACK");
 				p.getHandler().attacking=true;
-				
+				p.getSquare().setCanlifesteal(true);
 				p.getSquare().setCurrattackcooldown(p.getSquare().getAttackcooldown());
 			}
 		}
 		else if(e.getButton()==3&&p.getSquare().getCurrparrycooldown()==0){
-			System.out.println("X:"+x2+" Y:"+y2);
+			//System.out.println("X:"+x2+" Y:"+y2);
 			p.getHandler().setMouseCoords(x1, y1, x2, y2);//not the problem
 			p.getSquare().stop();//Stop moving
-			p.getSquare().setStunframes(25);//must be equal to the parry frames
+			//p.getSquare().setStunframes(25);//must be equal to the parry frames
 			p.getSquare().setParryframes(25);
 			p.getSquare().setCurrparrycooldown(p.getSquare().getParrycooldown());
 		}
@@ -287,9 +306,9 @@ public class Input extends JPanel implements ActionListener, KeyListener, MouseL
 	public void mouseReleased(MouseEvent e) {
 		if(e.getButton()==3&&canlinecast==true){
 			//System.out.println("Relaease");
-			int x2 = e.getX() + p.getSquare().getX() - p.camxoff;
-			int y2 = e.getY() + p.getSquare().getY() - p.camyoff;
-			p.getHandler().setMouseCoords(mousecoords[0], mousecoords[1], x2, y2);
+			int x3 = e.getX() + p.getSquare().getX() - p.camxoff;
+			int y3 = e.getY() + p.getSquare().getY() - p.camyoff;
+			p.getHandler().setMouseCoords(mousecoords[0], mousecoords[1], x3, y3);
 			p.getHandler().addInput("CLICKED");
 			p.getHandler().spawning=true;
 			canlinecast=false;

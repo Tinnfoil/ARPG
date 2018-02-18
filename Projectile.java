@@ -4,9 +4,11 @@ public class Projectile extends Hitbox{
 	
 	int x;
 	int y;
-	double angle;
+	private double angle;
 	private double vel;
 	
+	private boolean heal;
+	private int healamount;
 	private boolean bomb;
 	private boolean friendlybomb;
 	private int delay;
@@ -31,6 +33,10 @@ public class Projectile extends Hitbox{
 			setCurrentTime(getCurrentTime()+1);
 			setX(getX()+(int)(Math.cos(Math.toRadians(angle))*vel));
 			setY(getY()+(int)(Math.sin(Math.toRadians(angle))*vel));
+	}
+	
+	public double getAngle(){
+		return angle;
 	}
 	
 	public void changeAngle(int x1, int y1, int x2, int y2){
@@ -79,5 +85,22 @@ public class Projectile extends Hitbox{
 	public void setSquareshot(boolean squareshot) {
 		this.squareshot = squareshot;
 	}
+
+	public boolean isHeal() {
+		return heal;
+	}
+
+	public void setHeal(boolean heal) {
+		this.heal = heal;
+	}
+
+	public int getHealamount() {
+		return healamount;
+	}
+
+	public void setHealamount(int healamount) {
+		this.healamount = healamount;
+	}
+
 	
 }

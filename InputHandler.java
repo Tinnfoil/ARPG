@@ -18,6 +18,10 @@ public class InputHandler {
 		this.p=p;
 	}
 	
+	public ArrayList<String> getMultikey(){
+		return multiKey;
+	}
+	
     public void readList(){
         for(int i=0; i <multiKey.size(); i++) //
         {
@@ -111,18 +115,22 @@ public class InputHandler {
 			}
     	}  		
     	if((!multiKey.contains("UP") && !multiKey.contains("DOWN")) && (!multiKey.contains("LEFT") && !multiKey.contains("RIGHT"))){//Stops Square if none of movement keys are pressed
+    		//System.out.println(xVel);
     		if(xVel>0){
     			xVel-=1;
     		}
 			else if(xVel<0){
 				xVel+=1;
 			}
+
+
     		if(yVel>0){
     			yVel-=1;
     		}
 			else if(yVel<0){
 				yVel+=1;
 			}
+
     	}
     	
     	if(multiKey.contains("SPACE")){
@@ -169,7 +177,7 @@ public class InputHandler {
     		if(attacking==true){
     			double angle=p.getSquare().findAngle(mousecoords[1]-mousecoords[3],mousecoords[0]-mousecoords[2]);
     			if(attackdelay>0){
-    				p.getSquare().setInvunerable(true);
+    				//p.getSquare().setInvunerable(true);
     				p.getSquare().move((Math.cos(Math.toRadians(angle+180))*10),(Math.sin(Math.toRadians(angle+180))*10));
     			}
     			if(attackdelay<=0){
