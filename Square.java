@@ -13,6 +13,7 @@ public class Square extends Object
     private boolean fireupgrade;
     private boolean canfreeze; private int freezeframes; private int currfreezecooldown; private int freezecooldown;
     private boolean phasewalkupgrade; private int currphasewalkcooldown; private int phasewalkcooldown; private boolean phasewalking;
+    private boolean comboupgrade;
     
     private int attackdamage;
     private boolean attacking;
@@ -20,6 +21,8 @@ public class Square extends Object
     private int attackcooldown;
     private int currattackcooldown;
     private int attackamount;
+    private int attackcombo;
+    private int comboattacks;
     private int healthonhit;
     private boolean canlifesteal;
     
@@ -46,14 +49,18 @@ public class Square extends Object
         setRect(rect);
         setSkillpoints(0);
         fireupgrade=false;
-        canfreeze=true; setFreezeframes(0); setCurrfreezecooldown(0); setFreezecooldown(780);
+        canfreeze=false; setFreezeframes(0); setCurrfreezecooldown(0); setFreezecooldown(780);
         phasewalkupgrade=false; setCurrphasewalkcooldown(0); setPhasewalkcooldown(600); phasewalking=false;
+        comboupgrade=false;
         
         setMaxspeed(4);
         setAcceleration(2);
         setMaxhealth(100);
         setHealth(getMaxhealth());//Base 100, can change
-        setAttackdamage(500);
+        setAttackdamage(50);
+        setAttackcombo(1);
+        setComboattacks(0);
+        
         setAttackcooldown(20);
         setHealthonhit(0);
         
@@ -310,6 +317,30 @@ public class Square extends Object
 
 	public void setPhasewalking(boolean phasewalking) {
 		this.phasewalking = phasewalking;
+	}
+
+	public int getAttackcombo() {
+		return attackcombo;
+	}
+
+	public void setAttackcombo(int attackcombo) {
+		this.attackcombo = attackcombo;
+	}
+
+	public int getComboattacks() {
+		return comboattacks;
+	}
+
+	public void setComboattacks(int comboattacks) {
+		this.comboattacks = comboattacks;
+	}
+
+	public boolean isComboupgrade() {
+		return comboupgrade;
+	}
+
+	public void setComboupgrade(boolean comboupgrade) {
+		this.comboupgrade = comboupgrade;
 	}
 
 

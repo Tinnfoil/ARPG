@@ -99,8 +99,8 @@ public class Input extends JPanel implements ActionListener, KeyListener, MouseL
         			p.getSquare().setSkillpoints(p.getSquare().getSkillpoints()-1);
         		}
             	else if(p.getSquare().getSkillpoints()>=2){
-        			//
-        			//p.getSquare().setSkillpoints(p.getSquare().getSkillpoints()-2);
+            		p.getSquare().setComboupgrade(true);
+        			p.getSquare().setSkillpoints(p.getSquare().getSkillpoints()-2);
         		}
         	}
         }
@@ -188,6 +188,13 @@ public class Input extends JPanel implements ActionListener, KeyListener, MouseL
         	else{
         		p.opening=false;
         	}
+        }
+        if(c==KeyEvent.VK_U){//multiply by 2
+        	p.addString("The Mayor(The Arena Master): ",0,2,300);
+			p.addString("Mayor: For the murder of my daugther Hina",200,5,250);
+			p.addString("I DECALRE YOUR EXCUTION BY THE ARENA!",450,5,200);
+			p.addString("YOU ARE...",660,5,160);
+			p.addString("DEATHBOUND",860,5,200);
         }
         if(c==KeyEvent.VK_G){
         	double interval=360/8;
