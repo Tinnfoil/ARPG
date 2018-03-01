@@ -346,6 +346,13 @@ public class Play extends JPanel implements Runnable
 					AIs.get(i).setDotframes(s.getDotframes()*3);
 					AIs.get(i).setDotdamage(s.getDotdamage());
 				}
+				if(s.isStundashupgrade()&&s.getDashing()){
+					//AIs.get(i).setStunframes(30);
+					Circle c=new Circle(AIs.get(i).getMidx(),AIs.get(i).getMidy(),100,false,false,2);
+					circleStun(c,30,25,true,false);
+					Circles.add(c);
+					s.setDashstunned(true);
+				}
 				if(AIs.get(i).getClass()==Jumper.class){    	
 					if(s.getParryframes()>0){//Parrys result in delayed stuns. Must set both delay and stun duration in two lines always
 						AIs.get(i).knockback(AIs.get(i), s.getMidx(), s.getMidy(), .5);
@@ -473,7 +480,7 @@ public class Play extends JPanel implements Runnable
     		}
     		else if(c.canteleport()==true){//What happends end of teleport
     			Circle cs= new Circle(c.getX()+c.getXoff(),c.getY()+c.getYoff(), c.getRadius(),false, false, 1);
-    			circleStun(cs,30,10);
+    			circleStun(cs,30,10,false,true);
     			Circles.remove(i);
     		}
     		else{
@@ -497,17 +504,14 @@ public class Play extends JPanel implements Runnable
     		boolean remove=false;
     		if(d.getCurrintialwait()>=d.getIntialwait()){
     		if(d.getCurrdelay()<d.getDelay()){
-    			System.out.println("1");
     			d.setCurrdelay(d.getCurrdelay()+1);
     		}
     		else if(d.getCurrdelay()>=d.getDelay()){
     			if(d.getCurrlength()<d.getLength()){
-    				System.out.println("2");
     				d.setCurrlength(d.getCurrlength()+1);
     				d.setCurrdelay(0);
     			}
     			else if(d.getCurrwait()<d.getWait()){
-    				System.out.println("3");
     				d.setCurrwait(d.getCurrwait()+1);
     				if(d.getCurrwait()>=d.getWait()){
     					remove=true;
@@ -790,6 +794,9 @@ public class Play extends JPanel implements Runnable
     	if(s.getAttackcombo()==3){
     		damage=damage*2;
     	}
+    	if(a.getInvunerableframes()>0){
+    		damage=0;
+    	}
     	return damage;
     }
     
@@ -877,6 +884,18 @@ public class Play extends JPanel implements Runnable
 		Projectiles.add(p);
 	}
 	
+	public void stunDashanimation(){
+		Random RN= new Random();
+		int randpointx=(int)RN.nextInt((int)s.getRect().getWidth()/2)*(int)(Math.pow(-1, (RN.nextInt(2)+1)));
+		int randpointy=(int)RN.nextInt((int)s.getRect().getHeight()/2)*(int)(Math.pow(-1, (RN.nextInt(2)+1)));
+		Projectile p= new Projectile(s.getMidx()+randpointx,s.getMidy()+randpointy,s.getMidx()+randpointx+(int)(Math.cos(Math.toRadians(angle+180))),s.getMidy()+randpointy+(int)(Math.sin(Math.toRadians(180+angle))),5,5);
+		p.setHurtsallies(false);
+		p.setHurtsenemy(false);
+		if(RN.nextInt(3)==1){
+			Projectiles.add(p);
+		}
+	}
+	
 	public void spawnCircle(int x, int y, int radius, boolean hurtsenemy, boolean hurtsallies, int lifetime,int damage){
 		Circle c= new Circle(x,y,radius,hurtsenemy,hurtsallies,lifetime);
 		c.setDamage(damage);
@@ -909,11 +928,22 @@ public class Play extends JPanel implements Runnable
 		}
 	}
 	
-	public void circleStun(Circle c, int duration, int damage){
+	public void circleStun(Circle c, int duration, int damage, boolean hurtsenemies, boolean hurtsallies){
+		if(hurtsallies){
 		if(c.intersects(s)&&s.isInvunerable()==false&&s.getInvunerableframes()<=0){
 			s.stop();
 			s.setHealth(s.getHealth()-damage);
 			s.setStunframes(duration);
+		}
+		}
+		if(hurtsenemies){
+		for(int i=0;i<AIs.size();i++){
+			if(c.intersects(AIs.get(i))){
+				AIs.get(i).setHealth(AIs.get(i).getHealth()-calculateAttackdamage(damage, AIs.get(i)));
+				AIs.get(i).setStunframes(duration);
+				AIs.get(i).setInvunerableframes(5);
+			}
+		}
 		}
 	}
 	
@@ -977,7 +1007,10 @@ public class Play extends JPanel implements Runnable
         	if(s.getSpeedboostframes()>0){
         		g2d.setColor(Color.DARK_GRAY);
         	}
-        	if(s.getDashing()==true){
+        	if(s.getDashing()==true){      		
+        		if(s.isStundashupgrade()){
+        			stunDashanimation();
+        		}
         		g2d.setColor(Color.RED);
         	}
         	if(s.getInvunerableframes()>0&&s.getFreezeframes()<=0){//Animation for damage invulnerbility 
@@ -1035,7 +1068,8 @@ public class Play extends JPanel implements Runnable
         			else{g.drawString("(X) Phasewalk obtained", s.getX()+s.getWidth(), s.getY()+40);}
         			if(s.isComboupgrade()==false){g.drawString("(4) Weapon Arts; x2 damage on third attack[2 SP]", s.getX()+s.getWidth(), s.getY()+50);}
         			else{g.drawString("(X) Weapon Art obtained", s.getX()+s.getWidth(), s.getY()+50);}
-        			g.drawString("(5) Work in Progress", s.getX()+s.getWidth(), s.getY()+60);
+        			if(s.isStundashupgrade()==false){g.drawString("(5) Flicker; Stuns and damages enemies when hit by dash; Halves dash CD on hit[2 SP]", s.getX()+s.getWidth(), s.getY()+60);}
+        			else{g.drawString("(X) Flicker obtained", s.getX()+s.getWidth(), s.getY()+60);}
         			g.drawString("(6) Work in Progress", s.getX()+s.getWidth(), s.getY()+70);
         			g.drawString("(0) Back", s.getX()+s.getWidth(), s.getY()+80);
         		}
@@ -1200,6 +1234,7 @@ public class Play extends JPanel implements Runnable
             		g.drawRect((int)a.getX(), (int)a.getY(), (int)a.getSize(), (int)a.getSize());
             	}
             	if(a.getStunframes()>0){
+            		System.out.println("Stun");
             		Color c= new Color(100,200,1);
             		g.setColor(c);
             		g.drawString("Stunned!",(int)a.getX(), (int)a.getY()+(int)a.getRect().getHeight()+10);  
@@ -1359,6 +1394,10 @@ public class Play extends JPanel implements Runnable
 				h.removeInput("SPACE");
 				s.setDashing(false);
 				s.setCurrdashcooldown(s.getDashcooldown());
+				if(s.isDashstunned()==true){//Reduces dash cooldown if 
+					s.setCurrdashcooldown(s.getCurrdashcooldown()/2);
+					s.setDashstunned(false);
+				}
 				if(s.isPhasewalkupgrade()==true&&s.getCurrphasewalkcooldown()<=0&&s.isPhasewalking()==false){//Phase walk upgrade
 					opening=false;
 					UPDATE=((double)1/(double)30);
@@ -1468,10 +1507,10 @@ public class Play extends JPanel implements Runnable
 	public void displayDialogues(){
 		if(wave==1){
         	addString("The Mayor(The Arena Master): ",0,2,300);
-			addString("Mayor: For the murder of my daugther Hina",200,5,250);
-			addString("I DECALRE YOUR EXCUTION BY THE ARENA!",450,5,200);
-			addString("YOU ARE...",660,5,160);
-			addString("DEATHBOUND",860,5,200);
+			addString("Mayor: For the murder of my daugther",200,5,250);
+			addString("I DECLARE YOUR EXCUTION BY THE ARENA!",500,5,200);
+			addString("YOU ARE...",710,5,160);
+			addString("DEATHBOUND",960,5,200);
 		}
 		else if(wave==2){
 			//addString("Mayor: For the murder of my daugther Hina",0,5,250);

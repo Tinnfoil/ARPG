@@ -74,7 +74,7 @@ public class Input extends JPanel implements ActionListener, KeyListener, MouseL
         				p.getSquare().setSkillpoints(p.getSquare().getSkillpoints()-1);
         			}
         		}
-            	else if(p.getSquare().getSkillpoints()>=2){
+            	else if(p.getSquare().getSkillpoints()>=2&&p.getSquare().isCanfreeze()==false){
         			p.getSquare().setCanfreeze(true);
         			p.getSquare().setSkillpoints(p.getSquare().getSkillpoints()-2);
         		}
@@ -86,7 +86,7 @@ public class Input extends JPanel implements ActionListener, KeyListener, MouseL
         			p.s.setMaxhealth(p.getSquare().getMaxhealth()+50);
         			p.getSquare().setSkillpoints(p.getSquare().getSkillpoints()-1);
         		}
-            	else if(p.getSquare().getSkillpoints()>=2){
+            	else if(p.getSquare().getSkillpoints()>=2&&p.getSquare().isPhasewalkupgrade()==false){
         			p.getSquare().setPhasewalkupgrade(true);
         			p.getSquare().setSkillpoints(p.getSquare().getSkillpoints()-2);
         		}
@@ -98,7 +98,7 @@ public class Input extends JPanel implements ActionListener, KeyListener, MouseL
         			p.s.setAttackdamage(p.getSquare().getAttackdamage()+10);
         			p.getSquare().setSkillpoints(p.getSquare().getSkillpoints()-1);
         		}
-            	else if(p.getSquare().getSkillpoints()>=2){
+            	else if(p.getSquare().getSkillpoints()>=2&&p.getSquare().isComboupgrade()){
             		p.getSquare().setComboupgrade(true);
         			p.getSquare().setSkillpoints(p.getSquare().getSkillpoints()-2);
         		}
@@ -112,9 +112,9 @@ public class Input extends JPanel implements ActionListener, KeyListener, MouseL
         				p.getSquare().setSkillpoints(p.getSquare().getSkillpoints()-1);
         			}
         		}
-            	else if(p.getSquare().getSkillpoints()>=2){
-        			//
-        			//p.getSquare().setSkillpoints(p.getSquare().getSkillpoints()-2);
+            	else if(p.getSquare().getSkillpoints()>=2&&p.getSquare().isStundashupgrade()){
+        			p.getSquare().setStundashupgrade(true);
+        			p.getSquare().setSkillpoints(p.getSquare().getSkillpoints()-2);
         		}
         	}
         }
@@ -286,7 +286,7 @@ public class Input extends JPanel implements ActionListener, KeyListener, MouseL
 			}
 		}
 		else if(e.getButton()==1){
-			if(p.getHandler().attacking==false&&p.getSquare().getCurrattackcooldown()<=0){
+			if(p.getHandler().attacking==false&&p.getSquare().getCurrattackcooldown()<=0&&p.dead==false){
 				p.getHandler().setMouseCoords(x1, y1, x2, y2);
 				p.getHandler().attackdelay=4;
 				p.getHandler().addInput("ATTACK");

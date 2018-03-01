@@ -14,6 +14,7 @@ public class Square extends Object
     private boolean canfreeze; private int freezeframes; private int currfreezecooldown; private int freezecooldown;
     private boolean phasewalkupgrade; private int currphasewalkcooldown; private int phasewalkcooldown; private boolean phasewalking;
     private boolean comboupgrade;
+    private boolean stundashupgrade; private boolean dashstunned;
     
     private int attackdamage;
     private boolean attacking;
@@ -52,6 +53,7 @@ public class Square extends Object
         canfreeze=false; setFreezeframes(0); setCurrfreezecooldown(0); setFreezecooldown(780);
         phasewalkupgrade=false; setCurrphasewalkcooldown(0); setPhasewalkcooldown(600); phasewalking=false;
         comboupgrade=false;
+        stundashupgrade=true; setDashstunned(false);
         
         setMaxspeed(4);
         setAcceleration(2);
@@ -341,6 +343,22 @@ public class Square extends Object
 
 	public void setComboupgrade(boolean comboupgrade) {
 		this.comboupgrade = comboupgrade;
+	}
+
+	public boolean isStundashupgrade() {
+		return stundashupgrade;
+	}
+
+	public void setStundashupgrade(boolean stundashupgrade) {
+		this.stundashupgrade = stundashupgrade;
+	}
+
+	public boolean isDashstunned() {
+		return dashstunned;
+	}
+
+	public void setDashstunned(boolean dashstunned) {
+		this.dashstunned = dashstunned;
 	}
 
 
