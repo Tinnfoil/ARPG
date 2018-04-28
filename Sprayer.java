@@ -22,7 +22,7 @@ public class Sprayer extends AI{
 		setCanshoot(false);
 	}
 	
-	public void tick(Play p){
+	public void tick(Play p) throws Exception{
 		super.tick();
 		int smidx=(p.getSquare().getX()+(int)p.getSquare().getRect().getMaxX())/2;
 		int smidy=(p.getSquare().getY()+(int)p.getSquare().getRect().getMaxY())/2;
@@ -43,6 +43,10 @@ public class Sprayer extends AI{
 					Point a= p.bm.getMapPos(getX(), getY());
 					nextnode=new Node((int)a.getX(),(int)a.getY(),(int)a.getX(),(int)a.getY());
 					if(getCurrsprayduration()>0){
+						if(getCurrsprayduration()==getSprayduration()-1){
+							//System.out.println("Spray");
+							p.sound.playeffect("Sprayer");
+						}
 						setCurrsprayduration(getCurrsprayduration()-1);
 					}
 					else{

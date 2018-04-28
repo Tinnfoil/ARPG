@@ -9,6 +9,7 @@ public class InputHandler {
 	private int[] mousecoords= new int[4];
 	boolean spawning=false;
 	boolean attacking;
+	int clickangle;
 	int attackdelay=0;
 	Time t= new Time();
 	
@@ -118,19 +119,35 @@ public class InputHandler {
     		//System.out.println(xVel);
     		if(xVel>0){
     			xVel-=1;
+    			if(xVel<=1){
+    				xVel=0;
+    			}
     		}
 			else if(xVel<0){
 				xVel+=1;
+				if(xVel>=-1){
+    				xVel=0;
+    			}
 			}
-
 
     		if(yVel>0){
     			yVel-=1;
+    			if(yVel<=1){
+    				yVel=0;
+    			}
     		}
 			else if(yVel<0){
 				yVel+=1;
+				if(yVel>=-1){
+    				yVel=0;
+    			}
 			}
-
+    		//ROUND
+    		int x= (int)p.getSquare().getRect().getX();
+    		int y= (int)p.getSquare().getRect().getY();
+    		p.getSquare().setX(x);
+    		p.getSquare().setY(y);
+    		p.getSquare().getRect().setLocation(x, y);
     	}
     	
     	if(multiKey.contains("SPACE")){
@@ -161,8 +178,10 @@ public class InputHandler {
         		Projectile[] ps= new Projectile[p.getSquare().getProjectileshots()];
         		for(int i=0;i<ps.length;i++){
         			Projectile po= new Projectile(mousecoords[0], mousecoords[1],mousecoords[2], mousecoords[3],10,60);
-        			po.setDamage(20);
-        			po.setVel(20);
+        			//System.out.println(((20*p.getSquare().getAttackdamage()/30))*(2*p.getSquare().getChargeframes()/p.getSquare().getMaxchargeframes()));
+        			//Complex damage calculation o-0
+        			po.setDamage(((20*p.getSquare().getAttackdamage()/30))*(2*p.getSquare().getChargeframes()/p.getSquare().getMaxchargeframes()));
+        			po.setVel(20+(10*p.getSquare().getChargeframes()/p.getSquare().getMaxchargeframes()));
         			po.setHurtsenemy(true);
         			po.setSquareshot(true);
         			po.changeAngle(angle-((p.getSquare().getProjectileshots()*5)/2)+(i*interval));

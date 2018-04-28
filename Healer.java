@@ -43,6 +43,7 @@ public class Healer extends AI{
 					projectile.setHealamount(20);
 					projectile.setColor("DARK_GREEN");
 					projectile.setHeal(true);
+					setAngle(projectile.getAngle());
 					p.getProjectiles().add(projectile);
 					if(getCurrsprayduration()>0){
 						setCurrsprayduration(getCurrsprayduration()-1);

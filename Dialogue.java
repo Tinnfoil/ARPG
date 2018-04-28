@@ -118,4 +118,51 @@ public class Dialogue extends Object{
 	public void setYoff(int yoff) {
 		this.yoff = yoff;
 	}
+	
+	public void postCredits(Play p){
+		int lifetime=7200;
+		p.addString("",0,0,lifetime);
+		p.addString("",0,0,lifetime);
+		p.addString("",0,0,lifetime);
+		p.addString("Credits:",0,0,lifetime);
+		p.addString("",0,0,lifetime);
+		p.addString("",0,0,lifetime);
+		p.addString("Kenny Doan: 			Director, Game Design, & Programer",0,0,lifetime);
+		p.addString("",0,0,lifetime);
+		p.addString("Pampreet Gill: 		Music Producer",0,0,lifetime);
+		p.addString("",0,0,lifetime);
+		p.addString("Brian Tran: 			Sound Design",0,0,lifetime);
+		p.addString("",0,0,lifetime);
+		p.addString("Benjamin Lee: 		Alpha/Beta Tester",0,0,lifetime);
+		p.addString("",0,0,lifetime);
+		p.addString("Lynn Doan: 			Concept designs & Kenny's imouto",0,0,lifetime);
+		p.addString("",0,0,lifetime);
+		p.addString("",0,0,lifetime);
+		p.addString("Special Thanks to:",0,0,lifetime);
+		p.addString("",0,0,lifetime);
+		p.addString("",0,0,lifetime);
+		p.addString("Adrian Tsang",0,0,lifetime);
+		p.addString("",0,0,lifetime);
+		p.addString("William Cheng",0,0,lifetime);
+		p.addString("",0,0,lifetime);
+		p.addString("Joe Yuan",0,0,lifetime);
+		p.addString("",0,0,lifetime);
+		p.addString("Michael",0,0,lifetime);
+		p.addString("",0,0,lifetime);
+		p.addString("Ryan Chang",0,0,lifetime);
+		p.addString("-\"fite me ssbm\"",0,0,lifetime);p.addString("",0,0,lifetime);
+		p.addString("James \"Mongoloid\" Lai",0,0,lifetime);
+		p.addString("",0,0,lifetime);
+		p.addString("Andy Banh",0,0,lifetime);
+		p.addString("",0,0,lifetime);
+		p.addString("David Jian",0,0,lifetime);
+		p.addString("",0,0,lifetime);
+		p.addString("Catherine Nguyen",0,0,lifetime);
+		p.addString("",0,0,lifetime);
+		p.addString("Nolan Tonthat",0,0,lifetime);
+		p.addString("-\"Yikes\"",0,0,lifetime);p.addString("",0,0,lifetime);
+		p.addString("Eddie Chi",0,0,lifetime);
+		p.addString("-\"Why am I here?\"",0,0,lifetime);p.addString("",0,0,lifetime);
+		
+	}
 }

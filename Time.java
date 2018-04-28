@@ -24,7 +24,10 @@ public class Time {
 
 	}
 	
-	public double getTimer(){
+	public void setTimer(int t){
+		time=t;
+	}
+	public int getTimer(){
 		//System.out.println(time);		
 		return time;
 	}

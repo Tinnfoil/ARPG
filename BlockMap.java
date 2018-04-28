@@ -88,6 +88,29 @@ public class BlockMap {
 		return false;
 	}
 	/**
+	 * Returns a array of 0s or 1s. 1 meaning a block next to the specified block
+	 * first element represents the top block going clockwise afterwards
+	 * @param b
+	 * @return
+	 */
+	public int[] nextTo(Block b){
+		int[] array= new int[4];
+		Point p= getMapPos(b.getMidx(),b.getMidy());
+		if(p.getX()-1>=0&&gridmap[(int)p.getX()-1][(int)p.getY()]==1){
+			array[0]=1;
+		}
+		if(p.getY()+1<gridmap[0].length&&gridmap[(int)p.getX()][(int)p.getY()+1]==1){
+			array[1]=1;
+		}
+		if(p.getX()+1<gridmap.length&&gridmap[(int)p.getX()+1][(int)p.getY()]==1){
+			array[2]=1;
+		}
+		if(p.getY()-1>=0&&gridmap[(int)p.getX()][(int)p.getY()-1]==1){
+			array[3]=1;
+		}
+		return array;
+	}
+	/**
 	 * @return return middle pixel coords of map[][] of specified map coord
 	 * getX()=i
 	 */

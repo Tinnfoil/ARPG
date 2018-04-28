@@ -4,8 +4,9 @@ import javax.swing.*;
 
 import java.awt.MouseInfo;
 import java.awt.event.*;
+import java.util.Random;
 
-public class Input extends JPanel implements ActionListener, KeyListener, MouseListener{
+public class Input extends JPanel implements ActionListener, KeyListener, MouseListener, MouseWheelListener, MouseMotionListener{
 
 	private static final long serialVersionUID = 1L;
 	Play p;
@@ -36,6 +37,7 @@ public class Input extends JPanel implements ActionListener, KeyListener, MouseL
      */
     public void keyPressed(KeyEvent e){
         int c=e.getKeyCode();
+        if(p.startscreen==false){
         if(c==KeyEvent.VK_RIGHT||c==KeyEvent.VK_D){
        	 	p.getHandler().addInput("RIGHT");
        	 	//p.getHandler().readList();
@@ -51,6 +53,7 @@ public class Input extends JPanel implements ActionListener, KeyListener, MouseL
         if(c==KeyEvent.VK_DOWN||c==KeyEvent.VK_S){
         	p.getHandler().addInput("DOWN");
         	//p.getHandler().readList();
+        }
         }
         if(c==KeyEvent.VK_1){
         	if(p.getSquare().getSkillpoints()>0&&p.inbreak==true){
@@ -95,10 +98,10 @@ public class Input extends JPanel implements ActionListener, KeyListener, MouseL
         if(c==KeyEvent.VK_4){
         	if(p.getSquare().getSkillpoints()>0&&p.inbreak==true){
         		if(p.page1){
-        			p.s.setAttackdamage(p.getSquare().getAttackdamage()+10);
+        			p.s.setAttackdamage(p.getSquare().getAttackdamage()+15);
         			p.getSquare().setSkillpoints(p.getSquare().getSkillpoints()-1);
         		}
-            	else if(p.getSquare().getSkillpoints()>=2&&p.getSquare().isComboupgrade()){
+            	else if(p.getSquare().getSkillpoints()>=2&&p.getSquare().isComboupgrade()==false){
             		p.getSquare().setComboupgrade(true);
         			p.getSquare().setSkillpoints(p.getSquare().getSkillpoints()-2);
         		}
@@ -112,7 +115,7 @@ public class Input extends JPanel implements ActionListener, KeyListener, MouseL
         				p.getSquare().setSkillpoints(p.getSquare().getSkillpoints()-1);
         			}
         		}
-            	else if(p.getSquare().getSkillpoints()>=2&&p.getSquare().isStundashupgrade()){
+            	else if(p.getSquare().getSkillpoints()>=2&&p.getSquare().isStundashupgrade()==false){
         			p.getSquare().setStundashupgrade(true);
         			p.getSquare().setSkillpoints(p.getSquare().getSkillpoints()-2);
         		}
@@ -124,9 +127,9 @@ public class Input extends JPanel implements ActionListener, KeyListener, MouseL
         			p.s.setHealthonhit(p.getSquare().getHealthonhit()+4);
         			p.getSquare().setSkillpoints(p.getSquare().getSkillpoints()-1);
         		}
-            	else if(p.getSquare().getSkillpoints()>=2){
-        			//
-        			//p.getSquare().setSkillpoints(p.getSquare().getSkillpoints()-2);
+            	else if(p.getSquare().getSkillpoints()>=2&&p.getSquare().isSpinupgrade()==false){
+            		p.getSquare().setSpinupgrade(true);
+        			p.getSquare().setSkillpoints(p.getSquare().getSkillpoints()-2);
         		}
         	}
         }
@@ -140,7 +143,9 @@ public class Input extends JPanel implements ActionListener, KeyListener, MouseL
         }
         
         if(c==KeyEvent.VK_T){
-        	canteleport=true;
+        	//canteleport=true;
+        	Teleporter t= new Teleporter(p.getSquare().getMidx()+200, p.getSquare().getMidy(),35,6);
+        	p.AIs.add(t);
         }
         if(c==KeyEvent.VK_Q){
         	Sprayer s= new Sprayer(p.getSquare().getX()+200,p.getSquare().getY(),30,5);
@@ -154,12 +159,33 @@ public class Input extends JPanel implements ActionListener, KeyListener, MouseL
         if(c==KeyEvent.VK_L){
         	canlinecast=true;
         }
-        if(c==KeyEvent.VK_P){
-        	p.reset();
+        if(c==KeyEvent.VK_ENTER){
+        	if(p.startscreen){
+        		p.startscreen=false;
+				p.clearButtons();
+				try {
+					p.sound.changeTrack("Dark", "DarkHalf", 2);
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+        	}
+        	try {
+				p.reset();
+			} catch (Exception e1) {
+				e1.printStackTrace();
+			}
         }
         if(c==KeyEvent.VK_O){
-        	if(p.inbreak==true){
+        	if(p.inbreak==true&&p.AIs.size()==0&&p.win==false){
+				p.getSquare().setHealth(p.getSquare().getMaxhealth());
+				try {
+					p.sound.changeTrack("Dark", "DarkHalf", 2);
+				} catch (Exception e1) {
+					e1.printStackTrace();
+				}
         		p.inbreak=false;
+        		p.displayDialogues();
         	}
         }
         if(c==KeyEvent.VK_R){
@@ -174,46 +200,54 @@ public class Input extends JPanel implements ActionListener, KeyListener, MouseL
         	p.spawnPusher(p.getSquare().getMidx()+200, p.getSquare().getMidy(),30,6);
         }
         if(c==KeyEvent.VK_C){
-        	Teleporter t= new Teleporter(p.getSquare().getMidx()+200, p.getSquare().getMidy(),35,6);
-        	p.AIs.add(t);
+        	if(p.opening==false){
+        		p.cinematic=false;
+        		p.opening=true;
+        	}
+        	else{
+        		p.cinematic=true;
+        		p.opening=false;
+        	}
         }
         if(c==KeyEvent.VK_B){
         	Boss b= new Boss(p.getSquare().getMidx()+200, p.getSquare().getMidy(),50,2);
         	p.AIs.add(b);
         }
         if(c==KeyEvent.VK_M){
-        	if(p.opening==false){
-        		p.opening=true;
-        	}
-        	else{
-        		p.opening=false;
-        	}
+        	p.sound.changeVolume(-50);
         }
-        if(c==KeyEvent.VK_U){//multiply by 2
-        	p.addString("The Mayor(The Arena Master): ",0,2,300);
-			p.addString("Mayor: For the murder of my daugther Hina",200,5,250);
-			p.addString("I DECALRE YOUR EXCUTION BY THE ARENA!",450,5,200);
-			p.addString("YOU ARE...",660,5,160);
-			p.addString("DEATHBOUND",860,5,200);
-        }
-        if(c==KeyEvent.VK_G){
-        	double interval=360/8;
-        	Projectile[] ps= new Projectile[8];
-        	for(int i=0;i<ps.length;i++){
-        		Projectile po= new Projectile(p.getSquare().getMidx(), p.getSquare().getMidy(),p.getSquare().getMidx(), p.getSquare().getMidy(),7,40);
-        		po.setDamage(20);
-        		po.setHurtsenemy(true);
-        		po.setSquareshot(true);
-        		po.changeAngle(40-(60/2)+(i*interval));
-        		ps[i]=po;
+        if(c==KeyEvent.VK_EQUALS){
+        	if(p.easy==true){
+        		p.easy=false;
         	}
-        	p.spawnMultipleProjectiles(ps);
-        	//p.spawnMultipleProjectiles(p.getSquare().getMidx(), p.getSquare().getMidy(), 50, 10, 60, 20);
+        	else if(p.hard==false){
+        		p.hard=true;
+        	}
+        	p.changedifficulty();
         }
-
+        if(c==KeyEvent.VK_MINUS){
+        	if(p.hard==true){
+        		p.hard=false;
+        	}
+        	else if(p.easy==false){
+        		p.easy=true;
+        	}
+        	p.changedifficulty();
+        }
+        if(c==KeyEvent.VK_ESCAPE){
+        	 p.frame.dispatchEvent(new WindowEvent(p.frame, WindowEvent.WINDOW_CLOSING));
+        }
         if(c==KeyEvent.VK_SPACE){
         	if(p.s.getCurrdashcooldown()<=0){
         		p.getHandler().addInput("SPACE");
+        	}
+        }
+        if(c==KeyEvent.VK_L){
+        	p.scale+=.1;
+        }
+        if(c==KeyEvent.VK_K){
+        	if(p.scale>1){
+        		p.scale-=.1;
         	}
         }
     }
@@ -265,28 +299,52 @@ public class Input extends JPanel implements ActionListener, KeyListener, MouseL
 	}
 
 	@Override
-	public void mousePressed(MouseEvent e) {
+	public void mousePressed(MouseEvent e){
 		// TODO FIX PROJECTILE REGISTERING
+		Random RN= new Random();
 		int x1 = p.getSquare().getX() + p.getSquare().getWidth() / 2;
 		int y1 = p.getSquare().getY() + p.getSquare().getHeight() / 2;
 		int x2 = e.getX() + p.getSquare().getX() - p.camxoff;
 		int y2 = e.getY() + p.getSquare().getY() - p.camyoff;
+		//System.out.println(x2+","+y2);
+		for(int i=0;i<p.Buttons.size();i++){
+			//Point point=new Point(x2,y2);
+			if(p.Buttons.get(i).getRect().contains(e.getX(), e.getY())){
+				if(p.Buttons.get(i).getFunction().equals("Start Game")){
+					p.startscreen=false;
+					p.clearButtons();
+					try {
+						p.sound.changeTrack("Dark", "DarkHalf", 2);
+					} catch (Exception e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					System.out.println("Start");
+				}
+			}
+		}
 		if(e.getButton()==2&&canteleport==true){//teleport ability, press t and left click
 			p.getSquare().setX(x2);
 			p.getSquare().setY(y2);
 			canteleport=false;
 		}
-		else if(e.getButton()==2&&p.getSquare().getShotcharges()>0){
-			if(p.getHandler().spawning==false){//*****removing spawning will create a "Wall"
-				p.getSquare().setShotcharges(p.getSquare().getShotcharges()-1);
-				p.getHandler().setMouseCoords(x1, y1, x2, y2);
-				p.getHandler().addInput("CLICKED");
-				p.getHandler().spawning=true;
-				//System.out.println("Clicked");
-			}
+		else if(e.getButton()==2&&p.getSquare().getShotcharges()>0&&p.getSquare().isShooting()==false){
+			p.getSquare().setShooting(true);
 		}
-		else if(e.getButton()==1){
+		else if(e.getButton()==1&&p.startscreen==false){
 			if(p.getHandler().attacking==false&&p.getSquare().getCurrattackcooldown()<=0&&p.dead==false){
+				try {
+					if(p.getSquare().getAttackcombo()<3&&p.sound.frozen()==false){
+						//p.sound.playeffect("Swordswing1");
+						p.sound.playeffect("Swordswing"+(RN.nextInt(4)+1)+"");
+					}
+					else if(p.sound.frozen()==false){
+						p.sound.playeffect("Swordswing5");
+					}
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 				p.getHandler().setMouseCoords(x1, y1, x2, y2);
 				p.getHandler().attackdelay=4;
 				p.getHandler().addInput("ATTACK");
@@ -297,20 +355,35 @@ public class Input extends JPanel implements ActionListener, KeyListener, MouseL
 		}
 		else if(e.getButton()==3&&p.getSquare().getCurrparrycooldown()==0){
 			//System.out.println("X:"+x2+" Y:"+y2);
+			try {
+				//p.sound.warp();
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			p.getHandler().setMouseCoords(x1, y1, x2, y2);//not the problem
+			p.getHandler().clickangle=(int)p.getSquare().findAngle(y2-y1,x2-x1);
 			p.getSquare().stop();//Stop moving
-			//p.getSquare().setStunframes(25);//must be equal to the parry frames
-			p.getSquare().setParryframes(25);
+			p.getSquare().setParryframes(20);
 			p.getSquare().setCurrparrycooldown(p.getSquare().getParrycooldown());
+			//p.angle=(int)p.getSquare().findAngle(y2-y1, x2-x1)+180;
+			//p.getSquare().setAttackangle((int)p.getSquare().findAngle(y2-y1, x2-x1));
+			//if(p.s.getAttackcombo()==1){p.s.setAttackangle(p.s.getAttackangle()-30);}
+			//if(p.s.getAttackcombo()==2){p.s.setAttackangle(p.s.getAttackangle()-30);}
 		}
 		else if(e.getButton()==3&&canlinecast==true){
 			mousecoords[0]=x2;
 			mousecoords[1]=y2;
 		}
+		mouseMoved(e);
 	}
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
+		int x1 = p.getSquare().getX() + p.getSquare().getWidth() / 2;
+		int y1 = p.getSquare().getY() + p.getSquare().getHeight() / 2;
+		int x2 = e.getX() + p.getSquare().getX() - p.camxoff;
+		int y2 = e.getY() + p.getSquare().getY() - p.camyoff;
 		if(e.getButton()==3&&canlinecast==true){
 			//System.out.println("Relaease");
 			int x3 = e.getX() + p.getSquare().getX() - p.camxoff;
@@ -320,7 +393,54 @@ public class Input extends JPanel implements ActionListener, KeyListener, MouseL
 			p.getHandler().spawning=true;
 			canlinecast=false;
 		}
+		if(e.getButton()==2&&p.getSquare().isShooting()){
+			if(p.getHandler().spawning==false){//*****removing spawning will create a "Wall"
+				p.getSquare().setShotcharges(p.getSquare().getShotcharges()-1);
+				p.getHandler().setMouseCoords(x1, y1, x2, y2);
+				p.getHandler().addInput("CLICKED");
+				p.getHandler().spawning=true;
+				try {
+					p.sound.playeffect("Shoot");
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				//System.out.println("Clicked");
+			}
+			p.getSquare().setShooting(false);
+		}
+		
+	}
 
+	@Override
+	public void mouseDragged(MouseEvent e) {
+		// TODO Auto-generated method stub
+		p.mousex=(int)(e.getX()*1-(p.scale-1)) + (int)(p.getSquare().getX()*1-(p.scale-1)) - (int)(p.camxoff*1-(p.scale-1));
+		p.mousey=(int)(e.getY()*1-(p.scale-1)) + (int)(p.getSquare().getY()*1-(p.scale-1)) - (int)(p.camyoff*1-(p.scale-1));
+		p.getSquare().setAngle(p.getSquare().findAngle(p.mousey-p.getSquare().getMidy(), p.mousex-p.getSquare().getMidx()));
+	}
+
+	@Override
+	public void mouseMoved(MouseEvent e) {
+		p.mousex=(int)(e.getX()*1-(p.scale-1)) + (int)(p.getSquare().getX()*1-(p.scale-1)) - (int)(p.camxoff*1-(p.scale-1));
+		p.mousey=(int)(e.getY()*1-(p.scale-1)) + (int)(p.getSquare().getY()*1-(p.scale-1)) - (int)(p.camyoff*1-(p.scale-1));
+		p.getSquare().setAngle(p.getSquare().findAngle(p.mousey-p.getSquare().getMidy(), p.mousex-p.getSquare().getMidx()));
+		//p.getHandler().setMouseCoords(mousecoords[0],mousecoords[1],mousecoords[2],mousecoords[3]);
+	}
+
+	@Override
+	public void mouseWheelMoved(MouseWheelEvent arg0) {
+		if(arg0.getWheelRotation()<0&&p.scale<2){
+			//p.scale=(double)(((int)((p.scale*1.05)*10000))/100)/100;
+			p.scale*=1.05;
+		}
+		if(arg0.getWheelRotation()>0&&p.scale>.1){
+			//p.scale=(double)(((int)((p.scale/1.05)*10000))/100)/100;		
+			p.scale/=1.05;
+		}
+		if(Math.abs(p.scale-1)<.04){
+			p.scale=1;
+		}
 	}
 
 }

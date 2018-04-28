@@ -13,6 +13,7 @@ public class Projectile extends Hitbox{
 	private boolean friendlybomb;
 	private int delay;
 	
+	private boolean blood;
 	private boolean squareshot;
 	
 	public Projectile(int x1, int y1, int x2,int y2,int size, int lifetime){
@@ -24,6 +25,7 @@ public class Projectile extends Hitbox{
 		setVel(7);
 		setDamage(0);
 		squareshot=false;
+		blood=false;
 		//System.out.println("Angle:"+angle);
 		//System.out.println(Math.sin(Math.toRadians(angle)));
 		//System.out.println(Math.cos(Math.toRadians(angle)));
@@ -100,6 +102,14 @@ public class Projectile extends Hitbox{
 
 	public void setHealamount(int healamount) {
 		this.healamount = healamount;
+	}
+
+	public boolean isBlood() {
+		return blood;
+	}
+
+	public void setBlood(boolean blood) {
+		this.blood = blood;
 	}
 
 	

@@ -8,6 +8,7 @@ public class AI extends Object{
 	int size;
     private int health;
     private int maxhealth;
+    private boolean dead;
  
     private Time cooldown= new Time();//Current cooldown of the AI's ability
     private int shootcooldown;//The cooldown of Ai's Ability (Jump has a 1 second cooldown)
@@ -243,6 +244,14 @@ public class AI extends Object{
 
 	public void setAngle(double angle) {
 		this.angle = angle;
+	}
+
+	public boolean isDead() {
+		return dead;
+	}
+
+	public void setDead(boolean dead) {
+		this.dead = dead;
 	}
 		
 	

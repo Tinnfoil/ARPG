@@ -36,6 +36,13 @@ public class Camera {
 		}
 	
 	}
+	
+	public void strictmove(Play p){
+		currx = p.getSquare().getX() - xoffset ;
+		curry=  p.getSquare().getY() - yoffset ;
+		lastx=currx;
+		lasty=curry;
+	}
 
 	public float getY() {
 		return lasty;
