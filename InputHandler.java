@@ -171,16 +171,26 @@ public class InputHandler {
     		}
     	}
     	*/
+    	if(multiKey.contains("HOLDING_LEFT")){
+    		if(p.getSquare().getCurrattackcooldown()<=0&&p.getSquare().isChargingattack()==false&&p.getHandler().attacking==false&&p.getSquare().isAttacking()==false){
+    			p.getSquare().setChargingattack(true);
+    			p.getSquare().setAttackchargeframes(0);
+    			p.getSquare().setTotalattackchargeframes(0);
+    			//multiKey.remove("HOLDING_LEFT");
+    		}
+    	}
+    	
     	if(multiKey.contains("CLICKED")){
     		if(spawning==true){
     			double angle=p.getSquare().findAngle(mousecoords[3]-mousecoords[1], mousecoords[2]-mousecoords[0]);
     			double interval=(p.getSquare().getProjectileshots()*5)/p.getSquare().getProjectileshots();
         		Projectile[] ps= new Projectile[p.getSquare().getProjectileshots()];
         		for(int i=0;i<ps.length;i++){
-        			Projectile po= new Projectile(mousecoords[0], mousecoords[1],mousecoords[2], mousecoords[3],10,60);
+        			int width=30;
+        			Projectile po= new Projectile(mousecoords[0]-(width/2), mousecoords[1]-(width/2),mousecoords[2], mousecoords[3],width,60);
         			//System.out.println(((20*p.getSquare().getAttackdamage()/30))*(2*p.getSquare().getChargeframes()/p.getSquare().getMaxchargeframes()));
         			//Complex damage calculation o-0
-        			po.setDamage(((20*p.getSquare().getAttackdamage()/30))*(2*p.getSquare().getChargeframes()/p.getSquare().getMaxchargeframes()));
+        			po.setDamage(((20*p.getSquare().getAttackdamage()/40))*(2*p.getSquare().getChargeframes()/p.getSquare().getMaxchargeframes()));
         			po.setVel(20+(10*p.getSquare().getChargeframes()/p.getSquare().getMaxchargeframes()));
         			po.setHurtsenemy(true);
         			po.setSquareshot(true);
@@ -196,12 +206,13 @@ public class InputHandler {
     		if(attacking==true){
     			double angle=p.getSquare().findAngle(mousecoords[1]-mousecoords[3],mousecoords[0]-mousecoords[2]);
     			if(attackdelay>0){
-    				//p.getSquare().setInvunerable(true);
-    				p.getSquare().move((Math.cos(Math.toRadians(angle+180))*10),(Math.sin(Math.toRadians(angle+180))*10));
+    				p.getSquare().setInvunerable(true);
+    				p.getSquare().move((Math.cos(Math.toRadians(angle+180))*(6+10*p.getSquare().getAttackchargeframes()/p.getSquare().getMaxattackchargeframes())),(Math.sin(Math.toRadians(angle+180))*(6+10*p.getSquare().getAttackchargeframes()/p.getSquare().getMaxattackchargeframes())));
     			}
     			if(attackdelay<=0){
     				p.getSquare().setInvunerable(false);
     				p.delayedAttack(angle,4);
+    				p.getSquare().setChargingattack(false);
     				attacking =false;
     			}
     			else{

@@ -31,8 +31,8 @@ public class Boss extends AI{
 		setLasthealth(getMaxhealth());
 	}
 	
-	public void tick(Play p){
-		super.tick();
+	public void tick(Play p) throws Exception{
+		super.tick(p);
 		setTicktime(getTicktime()+1);
 		if(getTicktime()==360){
 			setTicktime(0);

@@ -78,5 +78,11 @@ public class Hitbox extends Object{
 	public void setColor(String color) {
 		this.color = color;
 	}
+	public int getMidx(){
+		return (int)(rect.getX()+rect.getWidth()/2);
+	}
+	public int getMidy(){
+		return (int)(rect.getY()+rect.getHeight()/2);
+	}
     
 }

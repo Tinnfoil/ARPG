@@ -15,6 +15,9 @@ public class AI extends Object{
     private boolean canshoot;//Whether or not the Ai can use it's ability
     private int range;//Range in which the ai uses it's ability
     private double angle;//Optional angle 
+    private double lastxpos;
+    private double lastypos;
+    private int frames;
     
 	Node lastnode;
 	Node nextnode;
@@ -47,7 +50,7 @@ public class AI extends Object{
 		this.size=size;
 	}
 	
-	public void tick(){//override in subclass(Thinking method in the AIs)
+	public void tick(Play p) throws Exception{//override in subclass(Thinking method in the AIs)
     	if(getVelx()>getMaxspeed()){
     		setVelx(getVelx()-.4);
     	}
@@ -60,6 +63,25 @@ public class AI extends Object{
     	else if(getVely()<-getMaxspeed()){
     		setVely(getVely()+.4);
     	}
+    	if(lastxpos==getX()&&lastypos==getY()){
+    		frames++;
+    		if(frames>getShootcooldown()+30){
+    			Point a= p.bm.getMapPos(getX(), getY());
+    			lastnode=new Node((int)a.getX(),(int)a.getY(),(int)a.getX(),(int)a.getY());
+    			nextnode=nextNode(lastnode,lastnode,p.getSquare().getMidx(),p.getSquare().getMidy(),p.bm);
+    			pathing=true;
+    			path(p.getSquare().getMidx(),p.getSquare().getMidy(),getRange(),p);
+    		}
+    	}
+    	else{
+    		lastxpos=getX();
+    		lastypos=getY();
+    		frames=0;
+    	}
+    	if(!withinBounds(p.bm)){
+    		setHealth(0);
+    	}
+    	//System.out.println("Frames:"+frames);
 	}
 	
 	public boolean intersects(Rectangle rect){
@@ -179,6 +201,18 @@ public class AI extends Object{
 		}
 		return nextnode;
 	}
+	
+	public boolean withinBounds(BlockMap bm){
+		//Node node=new Node((int)getX(),(int)getY(),(int)getX(),(int)getY());
+		int i=(int)bm.getMapPos(getX(), getY()).getX();
+		int j=(int)bm.getMapPos(getX(), getY()).getY();
+		if(i>0&&i<bm.map.length&&j>0&&j<bm.map[0].length){
+			return true;
+		}
+		else{
+			return false;
+		}
+	}
 
 	public int getMaxhealth() {
 		return maxhealth;
@@ -252,6 +286,30 @@ public class AI extends Object{
 
 	public void setDead(boolean dead) {
 		this.dead = dead;
+	}
+
+	public int getFrames() {
+		return frames;
+	}
+
+	public void setFrames(int frames) {
+		this.frames = frames;
+	}
+
+	public double getLastxpos() {
+		return lastxpos;
+	}
+
+	public void setLastxpos(double lastxpos) {
+		this.lastxpos = lastxpos;
+	}
+
+	public double getLastypos() {
+		return lastypos;
+	}
+
+	public void setLastypos(double lastypos) {
+		this.lastypos = lastypos;
 	}
 		
 	

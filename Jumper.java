@@ -35,8 +35,8 @@ public class Jumper extends AI{
 	 * 4.Repeat
 	 * @param p
 	 */
-	public void tick(Play p){//thinking methodd
-		super.tick();
+	public void tick(Play p) throws Exception{//thinking methodd
+		super.tick(p);
 		int smidx=p.getSquare().getMidx();
 		int smidy=p.getSquare().getMidy();
 		int midx=(int)(getX()+getX()+getRect().getWidth())/2;
@@ -67,7 +67,7 @@ public class Jumper extends AI{
 			getCooldown().time=0;
 			jumping=false;
 		}
-		else if(jumping==false){//If player is between jumprange and pathrange, simply follows player
+		else if(jumping==false&&distance(smidx, smidy)>getRange()){//If player is between jumprange and pathrange, simply follows player
 			followPoint(midx,midy,smidx,smidy);
 			//angle=(int) findAngle((smidy-getY())+(int)p.s.getVely()*10, smidx-getX()+(int)p.s.getVelx()*10);
 			jumptime.time=0;

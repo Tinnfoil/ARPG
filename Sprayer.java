@@ -23,12 +23,11 @@ public class Sprayer extends AI{
 	}
 	
 	public void tick(Play p) throws Exception{
-		super.tick();
+		super.tick(p);
 		int smidx=(p.getSquare().getX()+(int)p.getSquare().getRect().getMaxX())/2;
 		int smidy=(p.getSquare().getY()+(int)p.getSquare().getRect().getMaxY())/2;
 		int midx=(int)(getX()+getX()+getRect().getWidth())/2;
 		int midy=(int)(getY()+getY()+getRect().getHeight())/2;
-		
 		if(distance(midx,midy,smidx,smidy)<p.bm.scale*30){
 			move((double)getVelx(),(double)getVely());
 			if(canShoot()==true){//Shoot at player if they can

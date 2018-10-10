@@ -18,19 +18,18 @@ public class Pusher extends AI{
 		
 	}
 	
-	public void tick(Play p){
-		super.tick();
+	public void tick(Play p) throws Exception{
+		super.tick(p);
 		int smidx=(p.getSquare().getX()+(int)p.getSquare().getRect().getMaxX())/2;
 		int smidy=(p.getSquare().getY()+(int)p.getSquare().getRect().getMaxY())/2;
 		int midx=(int)(getX()+getX()+getRect().getWidth())/2;
 		int midy=(int)(getY()+getY()+getRect().getHeight())/2;
-		
+		setAngle(p.s.findAngle(smidy-midy, smidx-midx));
 		if(distance(midx,midy,smidx,smidy)<p.bm.scale*30){
 			move((double)getVelx(),(double)getVely());
 			if(canShoot()==true){//Shoot at player if they can
 				getCooldown().tick();
 				if(getCooldown().time==getShootcooldown()){
-					setAngle(p.s.findAngle(smidy-midy, smidx-midx));
 					Projectile projectile= new Projectile(midx,midy,smidx+(int)(p.getSquare().getVelx()*15),smidy+(int)(p.getSquare().getVely()*15),7,(distance(midx,midy,smidx,smidy)/10)+10);
 					projectile.setHurtsallies(false);
 					projectile.setVel(10);

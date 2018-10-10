@@ -226,6 +226,7 @@ public class Object {
 	    		int diff = (int) ((b.getX()+b.getWidth())-(getRect().getMinX()));
 	    		move(diff,0);
 	    	}
+	    	
 	    	if(b.getRect().contains(getRect().getMinX(), getRect().getMaxY()))//bottom left
 	    	{
 	    		if(getRect().getMaxY()-b.getY()<b.getMaxX()-getRect().getX()){
@@ -236,8 +237,6 @@ public class Object {
 	    			int diff =b.getMaxX()-(int)getRect().getMinX();
 	        		move(diff, 0);
 	    		}
-	    		
-
 	    	}
 	    	else if(b.getRect().contains(getRect().getMinX(), getRect().getMinY()))//top left
 	    	{

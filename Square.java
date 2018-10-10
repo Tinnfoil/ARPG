@@ -8,9 +8,10 @@ public class Square extends Object
 	
     private int width;
     private int height;
-    private int health;
+    private int health;private int displayhealth;
     private int maxhealth;
     private int skillpoints;
+    private int dodge;
     private boolean fireupgrade;
     private boolean canfreeze; private int freezeframes; private int currfreezecooldown; private int freezecooldown;
     private boolean phasewalkupgrade; private int currphasewalkcooldown; private int phasewalkcooldown; private boolean phasewalking;
@@ -26,8 +27,18 @@ public class Square extends Object
     private int attackamount;
     private int attackcombo;
     private int comboattacks;
+    private int attackarc;
+    private int lastattackradius;
+    private int lastattackangle;
+    private int maxattackamount;
+    private int attackinterval;
     private int healthonhit;
     private boolean canlifesteal;
+    private boolean chargingattack;
+    private int attackchargeframes;
+    private int maxattackchargeframes;
+    private int totalattackchargeframes;
+    private int tickframes;
     
     private double dvelx; private double dvely;
     private double camdisplacex; private double camdisplacey;
@@ -68,9 +79,21 @@ public class Square extends Object
         setAcceleration(2);
         setMaxhealth(100);
         setHealth(getMaxhealth());//Base 100, can change
+        setDisplayhealth(getHealth());
+        setAttacking(false);
         setAttackdamage(50);
         setAttackcombo(1);
-        setComboattacks(0);
+        setComboattacks(1);
+        setMaxattackamount(180);
+        setAttackinterval(30);
+        setAttackarc(getMaxattackamount());
+        setLastattackangle(0);
+        setLastattackradius(0);
+        setChargingattack(false);
+        setAttackchargeframes(0);
+        setMaxattackchargeframes(30);
+        setTotalattackchargeframes(0);
+        setTickframes(0);
         
         setDvelx(0); setDvely(0);
         setCamdisplacex(0);setCamdisplacey(0);
@@ -91,6 +114,7 @@ public class Square extends Object
         setDashcooldown(60);//60 frames
         setParrycooldown(120);//120
         setSpeedboostduration(75);
+        setDodge(5);
         
         fireupgrade=false;
         canfreeze=false; setFreezeframes(0); setCurrfreezecooldown(0); setFreezecooldown(780);
@@ -658,6 +682,150 @@ public class Square extends Object
 
 	public void setTotalchargeframes(int totalchargeframes) {
 		this.totalchargeframes = totalchargeframes;
+	}
+
+	public int getDisplayhealth() {
+		return displayhealth;
+	}
+
+	public void setDisplayhealth(int displayhealth) {
+		this.displayhealth = displayhealth;
+	}
+
+	public int getAttackchargeframes() {
+		return attackchargeframes;
+	}
+
+	public void setAttackchargeframes(int attackchargeframes) {
+		this.attackchargeframes = attackchargeframes;
+	}
+
+	public int getMaxattackchargeframes() {
+		return maxattackchargeframes;
+	}
+
+	public void setMaxattackchargeframes(int maxattackchargeframes) {
+		this.maxattackchargeframes = maxattackchargeframes;
+	}
+
+	public int getTotalattackchargeframes() {
+		return totalattackchargeframes;
+	}
+
+	public void setTotalattackchargeframes(int totalattackchargeframes) {
+		this.totalattackchargeframes = totalattackchargeframes;
+	}
+
+	/**
+	 * @return the chargingattack
+	 */
+	public boolean isChargingattack() {
+		return chargingattack;
+	}
+
+	/**
+	 * @param chargingattack the chargingattack to set
+	 */
+	public void setChargingattack(boolean chargingattack) {
+		this.chargingattack = chargingattack;
+	}
+
+	/**
+	 * @return the maxattackamount
+	 */
+	public int getMaxattackamount() {
+		return maxattackamount;
+	}
+
+	/**
+	 * @param maxattackamount the maxattackamount to set
+	 */
+	public void setMaxattackamount(int maxattackamount) {
+		this.maxattackamount = maxattackamount;
+	}
+
+	/**
+	 * @return the attackinterval
+	 */
+	public int getAttackinterval() {
+		return attackinterval;
+	}
+
+	/**
+	 * @param attackinterval the attackinterval to set
+	 */
+	public void setAttackinterval(int attackinterval) {
+		this.attackinterval = attackinterval;
+	}
+
+	/**
+	 * @return the attackarc
+	 */
+	public int getAttackarc() {
+		return attackarc;
+	}
+
+	/**
+	 * @param attackarc the attackarc to set
+	 */
+	public void setAttackarc(int attackarc) {
+		this.attackarc = attackarc;
+	}
+
+	/**
+	 * @return the lastattackangle
+	 */
+	public int getLastattackangle() {
+		return lastattackangle;
+	}
+
+	/**
+	 * @param lastattackangle the lastattackangle to set
+	 */
+	public void setLastattackangle(int lastattackangle) {
+		this.lastattackangle = lastattackangle;
+	}
+
+	/**
+	 * @return the lastattackradius
+	 */
+	public int getLastattackradius() {
+		return lastattackradius;
+	}
+
+	/**
+	 * @param lastattackradius the lastattackradius to set
+	 */
+	public void setLastattackradius(int lastattackradius) {
+		this.lastattackradius = lastattackradius;
+	}
+
+	/**
+	 * @return the tickframes
+	 */
+	public int getTickframes() {
+		return tickframes;
+	}
+
+	/**
+	 * @param tickframes the tickframes to set
+	 */
+	public void setTickframes(int tickframes) {
+		this.tickframes = tickframes;
+	}
+
+	/**
+	 * @return the dodge
+	 */
+	public int getDodge() {
+		return dodge;
+	}
+
+	/**
+	 * @param dodge the dodge to set
+	 */
+	public void setDodge(int dodge) {
+		this.dodge = dodge;
 	}
 
     

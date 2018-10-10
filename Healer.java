@@ -26,8 +26,8 @@ public class Healer extends AI{
 		
 	}
 	
-	public void tick(Play p){
-		super.tick();
+	public void tick(Play p) throws Exception{
+		super.tick(p);
 		int smidx=(p.getSquare().getX()+(int)p.getSquare().getRect().getMaxX())/2;
 		int smidy=(p.getSquare().getY()+(int)p.getSquare().getRect().getMaxY())/2;
 		int midx=(int)(getX()+getX()+getRect().getWidth())/2;

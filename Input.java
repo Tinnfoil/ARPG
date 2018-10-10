@@ -2,7 +2,6 @@ package ARPG;
 
 import javax.swing.*;
 
-import java.awt.MouseInfo;
 import java.awt.event.*;
 import java.util.Random;
 
@@ -13,7 +12,8 @@ public class Input extends JPanel implements ActionListener, KeyListener, MouseL
 	private int[] mousecoords= new int[2];
 	private boolean canteleport;
 	private boolean canlinecast;
-	
+	private int leftholdframes;
+
 	public Input(Play p){
 		this.p=p;
         addKeyListener(this);
@@ -22,6 +22,7 @@ public class Input extends JPanel implements ActionListener, KeyListener, MouseL
         
         mousecoords[0]=0;mousecoords[1]=0;
         canteleport=false;
+
 	}
 
 	public void actionPerformed(ActionEvent e){
@@ -72,8 +73,9 @@ public class Input extends JPanel implements ActionListener, KeyListener, MouseL
         if(c==KeyEvent.VK_2){
         	if(p.getSquare().getSkillpoints()>0&&p.inbreak==true){
         		if(p.page1){
-        			if(p.getSquare().getMaxspeed()<=7){
+        			if(p.getSquare().getMaxspeed()<7){
         				p.s.setMaxspeed(p.getSquare().getMaxspeed()+1);
+        				p.s.setDodge(p.getSquare().getDodge()+20);
         				p.getSquare().setSkillpoints(p.getSquare().getSkillpoints()-1);
         			}
         		}
@@ -98,7 +100,7 @@ public class Input extends JPanel implements ActionListener, KeyListener, MouseL
         if(c==KeyEvent.VK_4){
         	if(p.getSquare().getSkillpoints()>0&&p.inbreak==true){
         		if(p.page1){
-        			p.s.setAttackdamage(p.getSquare().getAttackdamage()+15);
+        			p.s.setAttackdamage(p.getSquare().getAttackdamage()+10);
         			p.getSquare().setSkillpoints(p.getSquare().getSkillpoints()-1);
         		}
             	else if(p.getSquare().getSkillpoints()>=2&&p.getSquare().isComboupgrade()==false){
@@ -151,10 +153,15 @@ public class Input extends JPanel implements ActionListener, KeyListener, MouseL
         	Sprayer s= new Sprayer(p.getSquare().getX()+200,p.getSquare().getY(),30,5);
         	p.AIs.add(s);
         }
+        if(c==KeyEvent.VK_J){
+        	Jumper s= new Jumper(p.getSquare().getX()+200,p.getSquare().getY(),30,5);
+        	p.AIs.add(s);
+        }
         if(c==KeyEvent.VK_E){
-        	int x= (int)MouseInfo.getPointerInfo().getLocation().x+p.getSquare().getX() - p.camxoff;
-        	int y= (int)MouseInfo.getPointerInfo().getLocation().y+p.getSquare().getY() - p.camyoff;
-        	System.out.println("X:"+x+" Y:"+y);
+			Dialogue d= new Dialogue("");
+			p.Dialogues.add(0, d);
+			p.tip=p.Dialogues.get(0).getRandomtip();
+        	p.addString(p.tip, 0,0, 240);
         }
         if(c==KeyEvent.VK_L){
         	canlinecast=true;
@@ -188,7 +195,7 @@ public class Input extends JPanel implements ActionListener, KeyListener, MouseL
         		p.displayDialogues();
         	}
         }
-        if(c==KeyEvent.VK_R){
+        if(c==KeyEvent.VK_Y){
         	Dodger d= new Dodger(p.getSquare().getMidx()+200, p.getSquare().getMidy(),30,6);
         	p.AIs.add(d);
         }
@@ -250,6 +257,55 @@ public class Input extends JPanel implements ActionListener, KeyListener, MouseL
         		p.scale-=.1;
         	}
         }
+        if(c==KeyEvent.VK_V){
+        	if(p.character==false){
+        		p.character=true;
+        	}else{
+        		p.character=false;
+        	}
+        }
+        if(c==KeyEvent.VK_P){
+        	if(p.UPDATE!=0){
+        		p.UPDATE=1/60;
+        	}
+        	else{
+        		p.UPDATE=0;
+        	}
+        }
+        if(c==KeyEvent.VK_R){
+        	if(p.dead){
+        		p.AIs.clear();
+            	p.deathbound=false;
+        		p.dead=false;
+        		p.inbreak=false;
+            	p.deaths++;
+        		p.deathtime=0;
+        		p.deathtimeframes=0;
+        		p.postgameframes=0;
+        		p.getSquare().setShotcharges(3);
+        		if(p.totaltime>=1){
+        			p.totaltime=((p.totaltime-1)/60)*60;
+        		}
+        		p.getSquare().setHealth(p.getSquare().getMaxhealth());
+            	p.sound.muteEffects();
+            	p.sound.shutdown();
+            	try {
+					p.sound= new SoundEngine("Dark","DarkHalf",2,p);
+				} catch (Exception e2) {
+					// TODO Auto-generated catch block
+					e2.printStackTrace();
+				}
+            	try {
+					p.sound.startUp();
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+        		p.Drops.clear();
+        		p.Dialogues.clear();
+        		p.displayDialogues();
+        	}
+        }
     }
 
     /**
@@ -301,12 +357,59 @@ public class Input extends JPanel implements ActionListener, KeyListener, MouseL
 	@Override
 	public void mousePressed(MouseEvent e){
 		// TODO FIX PROJECTILE REGISTERING
-		Random RN= new Random();
 		int x1 = p.getSquare().getX() + p.getSquare().getWidth() / 2;
 		int y1 = p.getSquare().getY() + p.getSquare().getHeight() / 2;
 		int x2 = e.getX() + p.getSquare().getX() - p.camxoff;
 		int y2 = e.getY() + p.getSquare().getY() - p.camyoff;
 		//System.out.println(x2+","+y2);
+		if(e.getButton()==2&&canteleport==true){//teleport ability, press t and left click
+			p.getSquare().setX(x2);
+			p.getSquare().setY(y2);
+			canteleport=false;
+		}
+		else if(e.getButton()==2&&p.getSquare().getShotcharges()>0&&p.getSquare().isShooting()==false){
+			p.getSquare().setShooting(true);
+		}
+		else if(e.getButton()==1&&p.startscreen==false&&p.getSquare().getCurrattackcooldown()<=0&&p.getSquare().isChargingattack()==false&&p.getHandler().attacking==false&&p.getSquare().isAttacking()==false){
+			p.getSquare().setChargingattack(true);
+			p.getSquare().setAttackchargeframes(0);
+			p.getSquare().setTotalattackchargeframes(0);
+		}
+		else if(e.getButton()==1&&p.startscreen==false){
+			p.getHandler().addInput("HOLDING_LEFT");
+		}
+		
+		else if(e.getButton()==3&&p.getSquare().getCurrparrycooldown()==0){
+			//System.out.println("X:"+x2+" Y:"+y2);
+			try {
+				//p.sound.warp();
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			
+			if(e.getButton()!=1){
+				setLeftholdframes(0);
+			}
+			else{
+				setLeftholdframes(getLeftholdframes()+1);
+			}
+			
+			p.getHandler().setMouseCoords(x1, y1, p.mousex, p.mousey);//not the problem
+			p.getHandler().clickangle=(int)p.getSquare().findAngle(p.mousey-y1,p.mousex-x1);
+			p.getSquare().stop();//Stop moving
+			p.getSquare().setParryframes(20);
+			p.getSquare().setCurrparrycooldown(p.getSquare().getParrycooldown());
+			//p.angle=(int)p.getSquare().findAngle(y2-y1, x2-x1)+180;
+			//p.getSquare().setAttackangle((int)p.getSquare().findAngle(y2-y1, x2-x1));
+			//if(p.s.getAttackcombo()==1){p.s.setAttackangle(p.s.getAttackangle()-30);}
+			//if(p.s.getAttackcombo()==2){p.s.setAttackangle(p.s.getAttackangle()-30);}
+		}
+		else if(e.getButton()==3&&canlinecast==true){
+			mousecoords[0]=x2;
+			mousecoords[1]=y2;
+		}
+		//mouseMoved(e);
 		for(int i=0;i<p.Buttons.size();i++){
 			//Point point=new Point(x2,y2);
 			if(p.Buttons.get(i).getRect().contains(e.getX(), e.getY())){
@@ -323,69 +426,18 @@ public class Input extends JPanel implements ActionListener, KeyListener, MouseL
 				}
 			}
 		}
-		if(e.getButton()==2&&canteleport==true){//teleport ability, press t and left click
-			p.getSquare().setX(x2);
-			p.getSquare().setY(y2);
-			canteleport=false;
-		}
-		else if(e.getButton()==2&&p.getSquare().getShotcharges()>0&&p.getSquare().isShooting()==false){
-			p.getSquare().setShooting(true);
-		}
-		else if(e.getButton()==1&&p.startscreen==false){
-			if(p.getHandler().attacking==false&&p.getSquare().getCurrattackcooldown()<=0&&p.dead==false){
-				try {
-					if(p.getSquare().getAttackcombo()<3&&p.sound.frozen()==false){
-						//p.sound.playeffect("Swordswing1");
-						p.sound.playeffect("Swordswing"+(RN.nextInt(4)+1)+"");
-					}
-					else if(p.sound.frozen()==false){
-						p.sound.playeffect("Swordswing5");
-					}
-				} catch (Exception e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-				p.getHandler().setMouseCoords(x1, y1, x2, y2);
-				p.getHandler().attackdelay=4;
-				p.getHandler().addInput("ATTACK");
-				p.getHandler().attacking=true;
-				p.getSquare().setCanlifesteal(true);
-				p.getSquare().setCurrattackcooldown(p.getSquare().getAttackcooldown());
-			}
-		}
-		else if(e.getButton()==3&&p.getSquare().getCurrparrycooldown()==0){
-			//System.out.println("X:"+x2+" Y:"+y2);
-			try {
-				//p.sound.warp();
-			} catch (Exception e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-			p.getHandler().setMouseCoords(x1, y1, x2, y2);//not the problem
-			p.getHandler().clickangle=(int)p.getSquare().findAngle(y2-y1,x2-x1);
-			p.getSquare().stop();//Stop moving
-			p.getSquare().setParryframes(20);
-			p.getSquare().setCurrparrycooldown(p.getSquare().getParrycooldown());
-			//p.angle=(int)p.getSquare().findAngle(y2-y1, x2-x1)+180;
-			//p.getSquare().setAttackangle((int)p.getSquare().findAngle(y2-y1, x2-x1));
-			//if(p.s.getAttackcombo()==1){p.s.setAttackangle(p.s.getAttackangle()-30);}
-			//if(p.s.getAttackcombo()==2){p.s.setAttackangle(p.s.getAttackangle()-30);}
-		}
-		else if(e.getButton()==3&&canlinecast==true){
-			mousecoords[0]=x2;
-			mousecoords[1]=y2;
-		}
-		mouseMoved(e);
 	}
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
+		Random RN= new Random();
 		int x1 = p.getSquare().getX() + p.getSquare().getWidth() / 2;
 		int y1 = p.getSquare().getY() + p.getSquare().getHeight() / 2;
 		int x2 = e.getX() + p.getSquare().getX() - p.camxoff;
 		int y2 = e.getY() + p.getSquare().getY() - p.camyoff;
+		p.getHandler().removeInput("HOLDING_LEFT");
 		if(e.getButton()==3&&canlinecast==true){
-			//System.out.println("Relaease");
+			//System.out.println("Release");
 			int x3 = e.getX() + p.getSquare().getX() - p.camxoff;
 			int y3 = e.getY() + p.getSquare().getY() - p.camyoff;
 			p.getHandler().setMouseCoords(mousecoords[0], mousecoords[1], x3, y3);
@@ -408,6 +460,28 @@ public class Input extends JPanel implements ActionListener, KeyListener, MouseL
 				//System.out.println("Clicked");
 			}
 			p.getSquare().setShooting(false);
+		}
+		if(e.getButton()==1&&p.getSquare().isChargingattack()){
+			if(p.getHandler().attacking==false&&p.getSquare().getCurrattackcooldown()<=0&&p.dead==false){
+				try {
+					if(p.getSquare().getAttackcombo()<3&&p.sound.frozen()==false){
+						//p.sound.playeffect("Swordswing1");
+						p.sound.playeffect("Swordswing"+(RN.nextInt(4)+1)+"");
+					}
+					else if(p.sound.frozen()==false){
+						p.sound.playeffect("Swordswing5");
+					}
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				p.getHandler().setMouseCoords(x1, y1, x2, y2);
+				p.getHandler().attackdelay=4;
+				p.getHandler().addInput("ATTACK");
+				p.getHandler().attacking=true;
+				p.getSquare().setCanlifesteal(true);
+				p.getSquare().setCurrattackcooldown(p.getSquare().getAttackcooldown());
+			}
 		}
 		
 	}
@@ -441,6 +515,14 @@ public class Input extends JPanel implements ActionListener, KeyListener, MouseL
 		if(Math.abs(p.scale-1)<.04){
 			p.scale=1;
 		}
+	}
+
+	public int getLeftholdframes() {
+		return leftholdframes;
+	}
+
+	public void setLeftholdframes(int leftholdframes) {
+		this.leftholdframes = leftholdframes;
 	}
 
 }
